@@ -434,6 +434,10 @@
       <button class="btn-ghost" id="expPng">PNG로 저장</button>
       <button class="btn-primary" id="expJpg">JPG로 저장</button>
     </div>
+    <div class="export-row" style="margin-top:8px;">
+      <button class="btn-ghost" id="expSaveNext">저장 후 다음 달로</button>
+      <button class="btn-primary" id="expPhpSet">사이트용 파일 저장 (PHP)</button>
+    </div>
   </section>
 </div>
 
@@ -1204,7 +1208,7 @@
   window.addEventListener('touchend', pointerUp);
 
   // ---- export ----
-  function exportAs(type){
+  function exportAs(type, filename){
     const prevSelected = selectedId;
     selectedId = null;
     draw(); // redraw once with no selection outline for a clean export
@@ -1225,7 +1229,7 @@
       dataUrl = cv.toDataURL('image/png');
     }
     link.href = dataUrl;
-    link.download = `wallpaper_banner.${ext}`;
+    link.download = filename || `wallpaper_banner.${ext}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1235,6 +1239,125 @@
   }
   document.getElementById('expPng').addEventListener('click', ()=>exportAs('image/png'));
   document.getElementById('expJpg').addEventListener('click', ()=>exportAs('image/jpeg'));
+
+  // ---- 저장 후 다음 달로 ----
+  document.getElementById('expSaveNext').addEventListener('click', ()=>{
+    exportAs('image/png');
+    exportAs('image/jpeg');
+    const idx = monthPicker.selectedIndex;
+    if (idx >= 0 && idx < monthPicker.options.length - 1){
+      monthPicker.selectedIndex = idx + 1;
+      monthPicker.dispatchEvent(new Event('change'));
+    } else {
+      alert('다음 달 옵션이 없어요. (선택 목록의 끝에 도달했어요)');
+    }
+  });
+
+  // ---- 사이트용 파일 세트 저장 (PHP + 배경2장) ----
+  function downloadTextFile(filename, content, mime){
+    const blob = new Blob([content], {type: mime});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+  function exportBgImageAsJpegDataUrl(){
+    if (!bgImage) return null;
+    const tmp = document.createElement('canvas');
+    tmp.width = bgImage.naturalWidth || bgImage.width;
+    tmp.height = bgImage.naturalHeight || bgImage.height;
+    const tctx = tmp.getContext('2d');
+    tctx.fillStyle = '#ffffff';
+    tctx.fillRect(0,0,tmp.width,tmp.height);
+    tctx.drawImage(bgImage, 0, 0, tmp.width, tmp.height);
+    return tmp.toDataURL('image/jpeg', 0.92);
+  }
+  function buildWallpaperPhp(yy, mm){
+    const id = 'wrap_ev_bg_' + yy + mm;
+    const monthLabel = yy + '년 ' + parseInt(mm,10) + '월';
+    return '<!DOCTYPE html>\n' +
+'<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">\n' +
+'<head>\n' +
+'    <title>YBM어학원 토익 실제문제로 수업중</title>\n' +
+'    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" charset="utf-8" />\n' +
+'    <meta http-equiv="Cache-Control" content="no-cache" />\n' +
+'    <meta http-equiv="Pragma" content="no-cache" />\n' +
+'    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no" />\n' +
+'    <meta name="author" content="YBM" />\n' +
+'    <meta name="apple-mobile-web-app-title" content="YBM" />\n' +
+'    <meta name="description" content="종로,강남,신촌,건대,인천,대구,부산 지역 토익,스피킹,회화,일본어,중국어 전문학원">\n' +
+'    <meta name="Keywords" content="토익학원,토스학원,오픽학원,회화공부,영어학습,토익 고득점"/>\n' +
+'    <meta id="alterDesc" name="Description" content="종로,강남,신촌,건대,인천,대구,부산 지역 토익,스피킹,회화,일본어,중국어 전문학원"/>\n' +
+'    <meta property="og:title" content="YBM어학원 토익 실제문제로 수업중">\n' +
+'    <meta property="og:url" content="https://www.ybmedu.com/">\n' +
+'    <meta property="og:image" content="../resource/images/common/m_logo_ybmedu.png">\n' +
+'    <meta property="og:description" content="종로,강남,신촌,건대,인천,대구,부산 지역 토익,스피킹,회화,일본어,중국어 전문학원">\n' +
+'    <meta name="twitter:card" content="summary">\n' +
+'    <meta name="twitter:title" content="YBM어학원 토익 실제문제로 수업중">\n' +
+'    <meta name="twitter:url" content="https://www.ybmedu.com/">\n' +
+'    <meta name="twitter:image" content="/resource/images/common/m_logo_ybmedu.png">\n' +
+'    <meta name="twitter:description" content="종로,강남,신촌,건대,인천,대구,부산 지역 토익,스피킹,회화,일본어,중국어 전문학원">\n' +
+'    <meta name="google-site-verification" content="" /> \n' +
+'    <!-- jQuery CDN -->\n' +
+'<!--[if lt IE9]><script src="resource/js/html5shiv.min.js"></scr' + 'ipt><![endif] --> \n' +
+'    <script src="resource/js/jquery-3.6.4.min.js"></scr' + 'ipt>\n' +
+'<!-- Custom CSS -->\n' +
+'    <link rel="stylesheet" href="/resource/css/reset.css" />\n' +
+'    <link rel="stylesheet" href="/resource/css/font.css" />\n' +
+'</head>\n' +
+'\n' +
+'<body>\n' +
+'\n' +
+'<!-- ' + monthLabel + ' -->\n' +
+'<div id="' + id + '">\n' +
+'\t<div class="content"><img src="wallpaper_' + yy + mm + '.jpg" alt="이달의혜택 "></div>\n' +
+'</div>\n' +
+'\n' +
+'<style>\n' +
+'\n' +
+'body, html { width: 100%; height: 100%; margin: 0; padding: 0;  }\n' +
+'\n' +
+'/* ' + monthLabel + ' */\n' +
+'#' + id + ' .content img {width:auto; height:100vh; margin: 0 auto;}\n' +
+'#' + id + ' {position: relative; width: 100%; height: 100%; overflow: hidden;}\n' +
+'#' + id + '::before {content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url(wallpaper_bg_' + yy + mm + '.jpg?' + yy + mm + ') no-repeat 11% 4%; background-size: inherit; filter: blur(10px); z-index: -1;}\n' +
+'\n' +
+'</style>\n' +
+'</body>\n' +
+'</html>\n';
+  }
+  document.getElementById('expPhpSet').addEventListener('click', ()=>{
+    const yearLayer = layers.find(l=>l.id==='year');
+    const monthLayer = layers.find(l=>l.id==='month');
+    const yearText = ((yearLayer && yearLayer.text) || '').trim();
+    const monthText = ((monthLayer && monthLayer.text) || '').trim();
+    if (!/^\d{4}$/.test(yearText) || !/^\d{1,2}$/.test(monthText)){
+      alert('연도/월 텍스트가 올바르지 않아요. (연도는 4자리, 월은 1~2자리 숫자여야 해요)');
+      return;
+    }
+    if (!bgImage){
+      alert('배경 이미지가 없어서 블러 배경용 파일을 만들 수 없어요. 배경을 먼저 불러와 주세요.');
+      return;
+    }
+    const yy = yearText.slice(-2);
+    const mm = String(parseInt(monthText,10)).padStart(2,'0');
+
+    exportAs('image/jpeg', `wallpaper_${yy}${mm}.jpg`);
+
+    const bgDataUrl = exportBgImageAsJpegDataUrl();
+    const bgLink = document.createElement('a');
+    bgLink.href = bgDataUrl;
+    bgLink.download = `wallpaper_bg_${yy}${mm}.jpg`;
+    document.body.appendChild(bgLink);
+    bgLink.click();
+    document.body.removeChild(bgLink);
+
+    downloadTextFile(`wallpaper_${yy}${mm}.php`, buildWallpaperPhp(yy, mm), 'application/octet-stream');
+  });
 
   ensureFonts(()=>{
     renderLayerList();
