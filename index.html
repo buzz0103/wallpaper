@@ -274,6 +274,12 @@
 
     <div class="block">
       <h2>1. 배경 이미지</h2>
+      <div class="field" style="margin-bottom:10px;">
+        <label>연/월 선택 (배경 자동 불러오기)</label>
+        <select id="monthPicker">
+          <option value="">선택 안 함 (직접 업로드)</option>
+        </select>
+      </div>
       <label class="file-drop" id="bgDrop">
         배경 이미지 등록
         <input type="file" id="bgInput" accept="image/*">
@@ -1065,7 +1071,46 @@
       img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
+    document.getElementById('monthPicker').value = '';
   });
+
+  // ---- month picker (auto background by year/month) ----
+  const MONTH_PICKER_YEAR_START = 2025;
+  const MONTH_PICKER_YEAR_END = 2030;
+  const monthPicker = document.getElementById('monthPicker');
+  for (let y = MONTH_PICKER_YEAR_START; y <= MONTH_PICKER_YEAR_END; y++){
+    const og = document.createElement('optgroup');
+    og.label = y + '년';
+    for (let m = 1; m <= 12; m++){
+      const mm = String(m).padStart(2,'0');
+      const opt = document.createElement('option');
+      opt.value = y + '-' + mm;
+      opt.textContent = y + '년 ' + m + '월';
+      og.appendChild(opt);
+    }
+    monthPicker.appendChild(og);
+  }
+  monthPicker.addEventListener('change', (e)=>{
+    const val = e.target.value;
+    if (!val) return;
+    const [yearStr, mm] = val.split('-');
+    const path = 'src/assets/' + yearStr + '/' + yearStr + mm + '.jpg';
+    const img = new Image();
+    img.onload = ()=>{
+      bgImage = img;
+      const yearLayer = layers.find(l=>l.id==='year');
+      const monthLayer = layers.find(l=>l.id==='month');
+      if (yearLayer) yearLayer.text = yearStr;
+      if (monthLayer) monthLayer.text = mm;
+      renderLayerList(); renderEditor(); draw();
+    };
+    img.onerror = ()=>{
+      alert(yearStr + '년 ' + parseInt(mm,10) + '월 배경 이미지를 찾을 수 없어요.\n(' + path + ')');
+      monthPicker.value = '';
+    };
+    img.src = path;
+  });
+
   document.getElementById('bgColor').addEventListener('input', (e)=>{
     bgColor = e.target.value; draw();
   });
