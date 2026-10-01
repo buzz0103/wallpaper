@@ -349,6 +349,7 @@
         <div class="field" id="fontFieldWrap">
           <label>폰트</label>
           <select id="fFont">
+            <option value="'Elice DX Neolli OTF', sans-serif">Elice DX Neolli (엘리스체)</option>
             <option value="'Noto Sans KR', sans-serif">Noto Sans KR (기본)</option>
             <option value="'Black Han Sans', sans-serif">Black Han Sans (임팩트)</option>
             <option value="'Jua', sans-serif">Jua (둥근 느낌)</option>
@@ -358,7 +359,7 @@
           </select>
         </div>
         <div class="field hint" id="tocFontHint" style="display:none;">
-          목차는 번호 <b>Montserrat 600</b> / 내용 <b>Elice DX Neolli Medium(22px)</b>으로 고정돼요.
+          목차는 번호 <b>Montserrat 600</b> / 내용 <b>Elice DX Neolli Medium(20px)</b>으로 고정돼요.
         </div>
         <div class="row">
           <div class="field">
@@ -449,10 +450,10 @@
 
   let layers = [
     { id:'year',  name:'연도',   text:'2026',
-      x:1200, y:132, size:120, font:"'Black Han Sans', sans-serif", weight:'900',
+      x:1200, y:132, size:120, font:"'Elice DX Neolli OTF', sans-serif", weight:'700',
       color:'#ffffff', align:'center', lead:1.1, shadow:false, fixed:false },
     { id:'month', name:'월',     text:'09',
-      x:1200, y:246, size:80, font:"'Black Han Sans', sans-serif", weight:'900',
+      x:1200, y:246, size:80, font:"'Elice DX Neolli OTF', sans-serif", weight:'700',
       color:'#ffffff', align:'center', lead:1.1, shadow:false, fixed:false },
     { id:'toc',   name:'목차',   type:'toc',
       items:['전체 이벤트 내용 보기','전역장병 할인 이벤트','모델 모집','신규 등록 사은품 증정','온라인 강의 30% 할인','친구 추천 이벤트','수강생 후기 이벤트','조기 등록 할인'],
@@ -480,7 +481,7 @@
   const TOC_CONTENT_FONT = "'Elice DX Neolli OTF', sans-serif";
   const TOC_CONTENT_WEIGHT = '400';
   const TOC_CONTENT_WEIGHT_EMPHASIS = '700';
-  const TOC_CONTENT_SIZE = 22;
+  const TOC_CONTENT_SIZE = 20;
   const TOC_ANNOTATION_SIZE = 15;
   const TOC_ANNOTATION_COLOR = '#767676';
   const TOC_ANNOTATION_WEIGHT = '400';
