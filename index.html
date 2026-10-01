@@ -266,7 +266,7 @@
 
 <header>
   <h1>월간 배너 자동 생성기</h1>
-  <span>배경 선택 · 텍스트 입력 · 드래그 배치 · JPG/PNG 저장 (1920×1024)</span>
+  <span>배경 선택 · 텍스트 입력 · 드래그 배치 · JPG/PNG 저장 (1920×900)</span>
 </header>
 
 <div class="layout">
@@ -278,7 +278,7 @@
         배경 이미지 등록
         <input type="file" id="bgInput" accept="image/*">
       </label>
-      <div class="hint">1920×1024 권장, 자동으로 채워짐</div>
+      <div class="hint">1920×900 권장, 자동으로 채워짐</div>
       <div class="field" style="margin-top:10px;">
         <label>배경색 (이미지 없을 때)</label>
         <input type="color" id="bgColor" value="#CC2030">
@@ -421,11 +421,11 @@
 
   <section class="stage">
     <div class="canvas-wrap">
-      <canvas id="cv" width="1920" height="1024"></canvas>
+      <canvas id="cv" width="1920" height="900"></canvas>
     </div>
     <div class="stage-foot">
       <span id="posHint">캔버스 안의 텍스트를 드래그해서 위치를 옮길 수 있어요.</span>
-      <span>1920 × 1024</span>
+      <span>1920 × 900</span>
     </div>
     <div class="export-row">
       <button class="btn-ghost" id="expPng">PNG로 저장</button>
