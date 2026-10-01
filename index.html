@@ -285,10 +285,6 @@
         <input type="file" id="bgInput" accept="image/*">
       </label>
       <div class="hint">1440×900 권장, 자동으로 채워짐</div>
-      <div class="field" style="margin-top:10px;">
-        <label>배경색 (이미지 없을 때)</label>
-        <input type="color" id="bgColor" value="#CC2030">
-      </div>
     </div>
 
     <div class="block">
@@ -457,14 +453,14 @@
   let layers = [
     { id:'year',  name:'연도',   text:'2026',
       x:1200, y:132, size:120, font:"'Elice DX Neolli OTF', sans-serif", weight:'700',
-      color:'#ffffff', align:'center', lead:1.1, shadow:false, fixed:false },
+      color:'#000000', align:'center', lead:1.1, shadow:false, fixed:false },
     { id:'month', name:'월',     text:'09',
       x:1200, y:246, size:80, font:"'Elice DX Neolli OTF', sans-serif", weight:'700',
-      color:'#ffffff', align:'center', lead:1.1, shadow:false, fixed:false },
+      color:'#000000', align:'center', lead:1.1, shadow:false, fixed:false },
     { id:'toc',   name:'목차',   type:'toc',
       items:['전체 이벤트 내용 보기','전역장병 할인 이벤트','모델 모집','신규 등록 사은품 증정','온라인 강의 30% 할인','친구 추천 이벤트','수강생 후기 이벤트','조기 등록 할인'],
       text:'', x:300, y:500, size:44, font:"'Noto Sans KR', sans-serif", weight:'700',
-      color:'#ffffff', numColor:'#ffffff', align:'left', lead:1.5, shadow:false, fixed:false,
+      color:'#000000', numColor:'#000000', align:'left', lead:1.5, shadow:false, fixed:false,
       bgColor:'#000000', bgOpacity:0, bgRadius:16, bgPadding:20, emphasisColor:'#CC2030', annotationColor:'#767676' }
   ];
   const TOC_MAX = 14;
@@ -1050,7 +1046,7 @@
     const layer = {
       id, name:'배너', text:'배너 문구를 입력하세요',
       x: W/2, y: H-120, size:48, font:"'Noto Sans KR', sans-serif", weight:'700',
-      color:'#ffffff', align:'center', lead:1.3, shadow:false, fixed:false
+      color:'#000000', align:'center', lead:1.3, shadow:false, fixed:false
     };
     layers.push(layer);
     selectedId = id;
@@ -1111,9 +1107,17 @@
     img.src = path;
   });
 
-  document.getElementById('bgColor').addEventListener('input', (e)=>{
-    bgColor = e.target.value; draw();
-  });
+  // 기본값: 오늘 기준 다음 달을 셀렉트에서 미리 선택
+  (function selectNextMonthByDefault(){
+    const now = new Date();
+    let y = now.getFullYear();
+    let m = now.getMonth() + 2; // getMonth()는 0~11, +2 = 다음 달(1~12)
+    if (m > 12){ m -= 12; y += 1; }
+    if (y < MONTH_PICKER_YEAR_START || y > MONTH_PICKER_YEAR_END) return;
+    const mm = String(m).padStart(2,'0');
+    monthPicker.value = y + '-' + mm;
+    monthPicker.dispatchEvent(new Event('change'));
+  })();
 
   // ---- footer banner ----
   document.getElementById('footerEnable').addEventListener('change', (e)=>{
