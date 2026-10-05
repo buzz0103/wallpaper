@@ -361,7 +361,7 @@
           </select>
         </div>
         <div class="field hint" id="tocFontHint" style="display:none;">
-          목차는 번호 <b>Montserrat 600</b> / 내용 <b>Elice DX Neolli Medium(20px)</b>으로 고정돼요.
+          목차는 번호 <b>Montserrat 600</b> / 내용 <b>Elice DX Neolli Medium</b> 폰트로 고정되고, 크기는 아래 "크기(px)" 값을 따라 번호와 내용이 함께 커지거나 작아져요.
         </div>
         <div class="row">
           <div class="field">
@@ -487,7 +487,6 @@
   const TOC_CONTENT_FONT = "'Elice DX Neolli OTF', sans-serif";
   const TOC_CONTENT_WEIGHT = '400';
   const TOC_CONTENT_WEIGHT_EMPHASIS = '700';
-  const TOC_CONTENT_SIZE = 20;
   const TOC_ANNOTATION_SIZE = 15;
   const TOC_ANNOTATION_COLOR = '#767676';
   const TOC_ANNOTATION_WEIGHT = '400';
@@ -528,9 +527,9 @@
   }
 
   function partFont(layer, p){
-    if (p.type === 'emphasis') return `${TOC_CONTENT_WEIGHT_EMPHASIS} ${TOC_CONTENT_SIZE}px ${TOC_CONTENT_FONT}`;
+    if (p.type === 'emphasis') return `${TOC_CONTENT_WEIGHT_EMPHASIS} ${layer.size}px ${TOC_CONTENT_FONT}`;
     if (p.type === 'annotation') return `${TOC_ANNOTATION_WEIGHT} ${TOC_ANNOTATION_SIZE}px ${TOC_CONTENT_FONT}`;
-    return `${TOC_CONTENT_WEIGHT} ${TOC_CONTENT_SIZE}px ${TOC_CONTENT_FONT}`;
+    return `${TOC_CONTENT_WEIGHT} ${layer.size}px ${TOC_CONTENT_FONT}`;
   }
   function partColor(layer, p){
     if (p.type === 'emphasis') return layer.emphasisColor || layer.color;
