@@ -32,10 +32,9 @@
   }
 </style>
 <style>
-  /* LINE Design System (design-systems/line.md): 절제된 친근함, LINE Green + Black + Gray, 상태는 opacity(hover 70% / pressed 50%), radius 5px */
+  /* LINE Design System (design-systems/line.md): 절제된 친근함, LINE 구조 + 포인트 #1775F0 + Black + Gray, 상태는 opacity(hover 70% / pressed 50%), radius 5px */
   :root{
-    --primary:#06C755;
-    --primary-alt:#04A647;
+    --primary:#1775F0;
     --ink:#000000;
     --body:#777777;
     --inactive:#949494;
@@ -75,7 +74,7 @@
   }
   header span{ font-size:13px; line-height:18px; color:#555555; }
   header{ flex-wrap:wrap; row-gap:4px; }
-  ::selection{ background:#B8F0CF; color:#000; }
+  ::selection{ background:#CFE2FC; color:#000; }
   .layout{
     display:grid;
     grid-template-columns:360px 1fr;
@@ -714,7 +713,7 @@
     ctx.drawImage(logo.img, b.left, b.top, b.w, b.h);
     if (selectedId === 'logo'){
       ctx.save();
-      ctx.strokeStyle = '#06C755';
+      ctx.strokeStyle = '#1775F0';
       ctx.lineWidth = 3;
       ctx.setLineDash([10,8]);
       ctx.strokeRect(b.left-10, b.top-10, b.w+20, b.h+20);
@@ -758,7 +757,7 @@
 
       if (layer.id === selectedId){
         ctx.save();
-        ctx.strokeStyle = '#06C755';
+        ctx.strokeStyle = '#1775F0';
         ctx.lineWidth = 3;
         ctx.setLineDash([10,8]);
         ctx.strokeRect(b.left-14, b.top-14, b.w+28, b.h+28);

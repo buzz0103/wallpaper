@@ -78,7 +78,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 | 토큰 | 값 | 용도 |
 | --- | --- | --- |
-| `--primary` | `#06C755` | LINE Green — 주요 버튼, 선택 표시 |
+| `--primary` | `#1775F0` | 주요 버튼, 선택 표시 |
 | `--ink` | `#000000` | 제목 · 본문 강조 |
 | `--body` | `#777777` | 보조 텍스트 (gray-600) |
 | `--inactive` | `#949494` | 도움말 (gray-500) |
@@ -92,7 +92,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 - 서체: LINE Seed KR → Pretendard → 시스템 sans-serif (Pretendard는 CDN 로드)
 - 상태: 색 변경 없이 opacity만 조정 — Hover 70% / Pressed 50% / Disabled `#E4E4E4`
-- 입력창: 배경 `#F5F5F5`, 보더 없음, 포커스 시 `1px solid #06C755`
+- 입력창: 배경 `#F5F5F5`, 보더 없음, 포커스 시 `1px solid #1775F0`
 - 버튼 · 입력창 높이 40px (저장 버튼 48px), 모서리 5px (카드 7px)
 - 아코디언은 구분선 방식, 간격은 4/8/12/16px 단위, 그라데이션 · 장식 없음
 
