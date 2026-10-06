@@ -351,11 +351,10 @@
           <label>목차 항목 (최대 14개, 순서대로 번호가 붙어요)</label>
           <div id="tocItems"></div>
           <button class="btn-ghost" id="addTocItem" style="width:100%;margin-top:6px;">+ 항목 추가</button>
-          <button class="btn-ghost" id="tocImportToggle" style="width:100%;margin-top:6px;">구글시트에서 붙여넣기</button>
           <button class="btn-ghost" id="tocFileBtn" style="width:100%;margin-top:6px;">메모장(.txt) 파일 업로드</button>
           <input type="file" id="tocFileInput" accept=".txt,text/plain" style="display:none;">
           <div id="tocImportBox" style="display:none;margin-top:8px;">
-            <textarea id="tocImportText" placeholder="구글시트에서 셀을 드래그해 복사한 뒤 여기에 붙여넣으세요. (한 줄 = 한 항목, 최대 14줄)" style="min-height:90px;"></textarea>
+            <textarea id="tocImportText" placeholder="메모장 내용을 확인한 뒤 적용을 눌러주세요. (한 줄 = 한 항목, 최대 14줄)" style="min-height:90px;"></textarea>
             <div class="row" style="margin-top:6px;">
               <button class="btn-ghost" id="tocImportCancel">취소</button>
               <button class="btn-primary" id="tocImportApply">적용</button>
@@ -1087,17 +1086,11 @@
     draw();
   });
 
-  // ---- paste-import from Google Sheets ----
-  const tocImportToggle = document.getElementById('tocImportToggle');
+  // ---- 메모장(.txt) 가져오기 ----
   const tocImportBox = document.getElementById('tocImportBox');
   const tocImportText = document.getElementById('tocImportText');
   const tocImportCancel = document.getElementById('tocImportCancel');
   const tocImportApply = document.getElementById('tocImportApply');
-
-  tocImportToggle.addEventListener('click', ()=>{
-    tocImportBox.style.display = (tocImportBox.style.display==='none') ? 'block' : 'none';
-    if (tocImportBox.style.display==='block') tocImportText.focus();
-  });
   const tocFileBtn = document.getElementById('tocFileBtn');
   const tocFileInput = document.getElementById('tocFileInput');
   tocFileBtn.addEventListener('click', ()=> tocFileInput.click());
