@@ -279,6 +279,42 @@
   .title-row .t-pos{display:flex;gap:6px;margin-top:6px;align-items:center;}
   .title-row .t-pos label{margin:0;font-size:11px;color:var(--muted);flex:0 0 auto;}
   .title-row .t-pos input{min-width:0;}
+  /* ---- 컨트롤 패널 (아코디언) ---- */
+  aside{ padding:16px 14px 24px; background:#fbfaf8; }
+  .panel-label{ font-size:12px; font-weight:600; color:var(--muted); margin:2px 4px 10px; }
+  .acc{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .acc-head{
+    width:100%;
+    display:flex; align-items:center; gap:10px;
+    padding:15px 16px;
+    background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
+    text-align:left;
+  }
+  .acc-head:hover{ background:#faf9f7; }
+  .acc-head:focus-visible{ outline:2px solid var(--red); outline-offset:-2px; }
+  .acc-ic{ display:flex; color:var(--red); }
+  .acc-ic svg, .acc-chev{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .acc-t{ flex:1; }
+  .acc-chev{ color:var(--muted); transition:transform .18s; }
+  .acc.open .acc-chev{ transform:rotate(180deg); }
+  .acc-body{ display:none; padding:4px 16px 18px; border-top:1px solid var(--line); }
+  .acc.open .acc-body{ display:block; padding-top:14px; }
+  .acc-body input[type="text"], .acc-body input[type="number"], .acc-body textarea, .acc-body select{
+    padding:10px 12px; font-size:14px; border-radius:9px;
+  }
+  .acc-body .field label{ font-size:12px; font-weight:600; color:#5b5852; margin-bottom:5px; }
+  .acc-body .btn-primary, .acc-body .btn-ghost{ padding:11px 14px; font-size:13.5px; border-radius:10px; }
+  .acc-body .file-drop{ padding:18px 14px; font-size:13.5px; font-weight:600; border-radius:12px; }
+  .editor-inner{ margin-top:0; }
+  #hostExtra .editor-inner{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .title-row .t-color{ width:40px; height:36px; padding:2px; flex:0 0 40px; }
 </style>
 </head>
 <body>
@@ -290,9 +326,14 @@
 
 <div class="layout">
   <aside>
+    <div class="panel-label">컨트롤 패널</div>
 
-    <div class="block">
-      <h2>1. 배경 이미지</h2>
+    <section class="acc open" id="acc-bg" data-acc="bg">
+      <button type="button" class="acc-head" aria-expanded="true">
+        <span class="acc-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg></span><span class="acc-t">배경</span>
+        <svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="acc-body">
       <div class="field" style="margin-bottom:10px;">
         <label>연/월 선택 (배경 자동 불러오기)</label>
         <select id="monthPicker">
@@ -304,23 +345,77 @@
         <input type="file" id="bgInput" accept="image/*">
       </label>
       <div class="hint">1440×900 권장</div>
-    </div>
+      </div>
+    </section>
 
-    <div class="block" id="titleBlock">
-      <h2>2. 타이틀</h2>
+    <section class="acc" id="acc-title" data-acc="title">
+      <button type="button" class="acc-head" aria-expanded="false">
+        <span class="acc-ic"><svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></span><span class="acc-t">타이틀</span>
+        <svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="acc-body">
       <div id="titleRows"></div>
       <div class="hint">글자를 누르면 캔버스에서 바로 드래그해 옮길 수도 있어요. X는 오른쪽 끝 기준(오른쪽 정렬)이에요.</div>
-    </div>
+      </div>
+    </section>
 
-    <div class="block">
-      <h2>3. 텍스트 레이어 (그 외)</h2>
+    <section class="acc" id="acc-toc" data-acc="toc">
+      <button type="button" class="acc-head" aria-expanded="false">
+        <span class="acc-ic"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span class="acc-t">목차</span>
+        <svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="acc-body">
+      <div id="hostToc"></div>
+      </div>
+    </section>
+
+    <section class="acc" id="acc-logo" data-acc="logo">
+      <button type="button" class="acc-head" aria-expanded="false">
+        <span class="acc-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></span><span class="acc-t">로고</span>
+        <svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="acc-body">
+      <div class="field row tight" style="margin-bottom:12px;">
+        <label style="margin:0;flex:0 0 auto;">로고 표시</label>
+        <input type="checkbox" id="logoEnable" style="width:auto;" checked>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>가로 크기 (<span id="logoWVal">120</span>px)</label>
+        <input type="range" id="logoW" min="40" max="600" step="1" value="120" style="width:100%;">
+      </div>
+      <div class="hint">src/assets/Brand_logo.svg 를 사용해요. 캔버스에서 드래그로 위치를 옮길 수 있어요. 배경 이미지에 이미 로고가 있으면 표시를 꺼주세요.</div>
+      </div>
+    </section>
+
+    <section class="acc" id="acc-footer" data-acc="footer">
+      <button type="button" class="acc-head" aria-expanded="false">
+        <span class="acc-ic"><svg viewBox="0 0 24 24"><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M3 5h18M3 9h10"/></svg></span><span class="acc-t">하단 배너</span>
+        <svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="acc-body">
+      <div class="field row tight" style="margin-bottom:12px;">
+        <label style="margin:0;flex:0 0 auto;">배너 표시</label>
+        <input type="checkbox" id="footerEnable" style="width:auto;">
+      </div>
+      <label class="file-drop" id="footerDrop">
+        배너 이미지를 클릭해서 선택하세요<br>(2560×260 권장 · 원본의 1/2 크기로 자동 축소)
+        <input type="file" id="footerInput" accept="image/*">
+      </label>
+      <div class="hint">기본 위치는 하단 중앙이며, 캔버스에서 드래그로 옮길 수 있어요. 모서리는 24px 둥글게 처리돼요.</div>
+      </div>
+    </section>
+
+    <section class="acc" id="acc-extra" data-acc="extra">
+      <button type="button" class="acc-head" aria-expanded="false">
+        <span class="acc-ic"><svg viewBox="0 0 24 24"><path d="M4 7V5h16v2M12 5v14M9 19h6"/><path d="M18 14v6M15 17h6"/></svg></span><span class="acc-t">추가 텍스트</span>
+        <svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="acc-body">
       <div class="layer-list" id="layerList"></div>
       <button class="btn-ghost" id="addBanner" style="width:100%;">+ 배너 텍스트 추가</button>
-    </div>
-
-    <div class="block" id="editorBlock">
-      <h2>4. 선택한 텍스트 편집</h2>
-      <div id="editorEmpty" class="hint">왼쪽 목록에서 텍스트를 선택하거나<br>캔버스의 글자를 클릭하세요.</div>
+      <div id="hostExtra">
+    <div class="editor-inner" id="editorBlock">
+            <div id="editorEmpty" class="hint">왼쪽 목록에서 텍스트를 선택하거나<br>캔버스의 글자를 클릭하세요.</div>
       <div id="editorForm" style="display:none;">
         <div class="field" id="textEditorField">
           <label>내용 (줄바꿈 가능)</label>
@@ -431,32 +526,9 @@
         </div>
       </div>
     </div>
-
-    <div class="block">
-      <h2>5. 하단 배너 이미지</h2>
-      <div class="field row tight" style="margin-bottom:12px;">
-        <label style="margin:0;flex:0 0 auto;">배너 표시</label>
-        <input type="checkbox" id="footerEnable" style="width:auto;">
       </div>
-      <label class="file-drop" id="footerDrop">
-        배너 이미지를 클릭해서 선택하세요<br>(2560×260 권장 · 원본의 1/2 크기로 자동 축소)
-        <input type="file" id="footerInput" accept="image/*">
-      </label>
-      <div class="hint">기본 위치는 하단 중앙이며, 캔버스에서 드래그로 옮길 수 있어요. 모서리는 24px 둥글게 처리돼요.</div>
-    </div>
-
-    <div class="block">
-      <h2>6. 로고 (SVG)</h2>
-      <div class="field row tight" style="margin-bottom:12px;">
-        <label style="margin:0;flex:0 0 auto;">로고 표시</label>
-        <input type="checkbox" id="logoEnable" style="width:auto;" checked>
       </div>
-      <div class="field" style="margin-bottom:0;">
-        <label>가로 크기 (<span id="logoWVal">120</span>px)</label>
-        <input type="range" id="logoW" min="40" max="600" step="1" value="120" style="width:100%;">
-      </div>
-      <div class="hint">src/assets/Brand_logo.svg 를 사용해요. 캔버스에서 드래그로 위치를 옮길 수 있어요. 배경 이미지에 이미 로고가 있으면 표시를 꺼주세요.</div>
-    </div>
+    </section>
 
   </aside>
 
@@ -822,6 +894,35 @@
     }
   }
 
+  // ---- 컨트롤 패널 아코디언 ----
+  function setAcc(key, open){
+    const el = document.getElementById('acc-'+key); if (!el) return;
+    el.classList.toggle('open', open);
+    el.querySelector('.acc-head').setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function accKeyFor(id){
+    if (id === 'logo') return 'logo';
+    if (id === 'footerBanner') return 'footer';
+    const l = layers.find(l=>l.id===id);
+    if (!l) return null;
+    if (l.title) return 'title';
+    if (l.type === 'toc') return 'toc';
+    return 'extra';
+  }
+  function openAccFor(id){ const k = accKeyFor(id); if (k) setAcc(k, true); }
+  document.querySelectorAll('.acc-head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const sec = head.parentElement, key = sec.dataset.acc;
+      const willOpen = !sec.classList.contains('open');
+      setAcc(key, willOpen);
+      if (!willOpen) return;
+      // 열 때 해당 항목을 캔버스에서도 선택
+      const pick = { toc:'toc', logo:'logo' }[key];
+      if (pick && selectedId !== pick){ selectedId = pick; renderLayerList(); renderEditor(); draw(); }
+      else if (key==='title' && !(layers.find(l=>l.id===selectedId)||{}).title){ selectedId = 'titleMain'; renderLayerList(); renderEditor(); draw(); }
+    });
+  });
+
   // ---- 타이틀 블록 (이달의 혜택 / 월 숫자 / 영문 월 / 연도) ----
   const MONTH_NAMES = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
   const TITLE_SPECS = {
@@ -846,10 +947,12 @@
     row.innerHTML =
       '<div class="t-name"></div><div class="t-spec"></div>' +
       '<input type="text" class="t-text">' +
-      '<div class="t-pos"><label>X</label><input type="number" class="t-x" step="1"><label>Y</label><input type="number" class="t-y" step="1"></div>';
+      '<div class="t-pos"><label>X</label><input type="number" class="t-x" step="1"><label>Y</label><input type="number" class="t-y" step="1"><input type="color" class="t-color" title="색상"></div>';
     row.querySelector('.t-name').textContent = layer.name;
     row.querySelector('.t-spec').textContent = TITLE_SPECS[layer.id] || '';
-    const tText = row.querySelector('.t-text'), tX = row.querySelector('.t-x'), tY = row.querySelector('.t-y');
+    const tText = row.querySelector('.t-text'), tX = row.querySelector('.t-x'), tY = row.querySelector('.t-y'), tC = row.querySelector('.t-color');
+    tC.value = layer.color;
+    tC.addEventListener('input', ()=>{ layer.color = tC.value; draw(); });
     tText.addEventListener('input', ()=>{
       layer.text = tText.value;
       if (layer.id === 'titleNum'){
@@ -861,9 +964,9 @@
     });
     tX.addEventListener('input', ()=>{ const v = parseFloat(tX.value); if(!isNaN(v)){ layer.x = v; draw(); } });
     tY.addEventListener('input', ()=>{ const v = parseFloat(tY.value); if(!isNaN(v)){ layer.y = v; draw(); } });
-    [tText,tX,tY].forEach(el=> el.addEventListener('focus', ()=>{ selectedId = layer.id; renderEditor(); draw(); }));
+    [tText,tX,tY,tC].forEach(el=> el.addEventListener('focus', ()=>{ selectedId = layer.id; renderEditor(); draw(); }));
     titleRowsBox.appendChild(row);
-    titleInputs[layer.id] = { row, tText, tX, tY };
+    titleInputs[layer.id] = { row, tText, tX, tY, tC };
   });
   function syncTitleInputs(){
     layers.filter(l=>l.title).forEach(layer=>{
@@ -872,6 +975,7 @@
       if (document.activeElement !== t.tText) t.tText.value = layer.text;
       if (document.activeElement !== t.tX) t.tX.value = Math.round(layer.x);
       if (document.activeElement !== t.tY) t.tY.value = Math.round(layer.y);
+      t.tC.value = layer.color;
     });
   }
 
@@ -880,7 +984,7 @@
     const list = document.getElementById('layerList');
     list.innerHTML = '';
     layers.forEach(layer=>{
-      if (layer.title) return;
+      if (layer.title || layer.type==='toc') return;
       const chip = document.createElement('div');
       chip.className = 'layer-chip' + (layer.id===selectedId?' active':'');
       const nm = document.createElement('span');
@@ -898,7 +1002,7 @@
         renderLayerList(); renderEditor(); draw();
       };
       chip.appendChild(del);
-      chip.onclick = ()=>{ selectedId = layer.id; renderLayerList(); renderEditor(); draw(); };
+      chip.onclick = ()=>{ selectedId = layer.id; renderLayerList(); renderEditor(); draw(); openAccFor(layer.id); };
       list.appendChild(chip);
     });
   }
@@ -937,8 +1041,16 @@
   const weightFieldWrap = document.getElementById('weightFieldWrap');
   const tocFontHint = document.getElementById('tocFontHint');
 
+  const editorBlockEl = document.getElementById('editorBlock');
+  function placeEditor(l){
+    const host = document.getElementById(l && l.type==='toc' ? 'hostToc' : 'hostExtra');
+    if (host && editorBlockEl.parentElement !== host) host.appendChild(editorBlockEl);
+    // 타이틀 4종은 타이틀 패널의 입력칸으로 편집하므로 공용 편집기는 숨김
+    editorBlockEl.style.display = ((l && l.title) || (!l && (selectedId==='logo' || selectedId==='footerBanner'))) ? 'none' : 'block';
+  }
   function renderEditor(){
     const l = currentLayer();
+    placeEditor(l);
     if (!l){
       editorEmpty.style.display='block';
       editorForm.style.display='none';
@@ -1180,6 +1292,7 @@
     layers.push(layer);
     selectedId = id;
     renderLayerList(); renderEditor(); draw();
+    openAccFor(id);
   });
 
   // ---- background upload ----
@@ -1326,6 +1439,7 @@
       dragOffset.y = pos.y - hit.y;
       cv.classList.add('dragging');
       renderLayerList(); renderEditor(); draw();
+      openAccFor(hit.id);
     }
   }
   function pointerMove(evt){
