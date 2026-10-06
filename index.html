@@ -589,7 +589,7 @@
       color:'#6F4AC7', align:'right', lead:1.2, shadow:false },
     { id:'toc',   name:'목차',   type:'toc',
       items:['전체 이벤트 내용 보기','전역장병 할인 이벤트','모델 모집','신규 등록 사은품 증정','온라인 강의 30% 할인','친구 추천 이벤트','수강생 후기 이벤트','조기 등록 할인'],
-      text:'', x:700, y:405, size:20, font:"'Noto Sans KR', sans-serif", weight:'700',
+      text:'', x:700, y:380, size:20, font:"'Noto Sans KR', sans-serif", weight:'700',
       color:'#000000', numColor:'#000000', align:'left', lead:1.5, shadow:false, fixed:false,
       bgColor:'#000000', bgOpacity:0, bgRadius:16, bgPadding:20, emphasisColor:'#CC2030', annotationColor:'#767676' }
   ];
@@ -974,7 +974,27 @@
     titleRowsBox.appendChild(row);
     titleInputs[layer.id] = { row, tText, tX, tY, tC };
   });
+  // 목차 위치(X/Y) 입력
+  const tocPosInputs = (function(){
+    const host = document.getElementById('hostToc');
+    const row = document.createElement('div');
+    row.className = 'title-row';
+    row.style.paddingTop = '0';
+    row.innerHTML = '<div class="t-name">목차 위치</div><div class="t-spec">X는 왼쪽 끝, Y는 목차 블록의 세로 중심 기준이에요. (캔버스 높이 900px)</div>' +
+      '<div class="t-pos"><label>X</label><input type="number" class="t-x" step="1"><label>Y</label><input type="number" class="t-y" step="1"></div>';
+    host.parentNode.insertBefore(row, host);
+    const tx = row.querySelector('.t-x'), ty = row.querySelector('.t-y');
+    const getL = ()=> layers.find(l=>l.id==='toc');
+    tx.addEventListener('input', ()=>{ const v=parseFloat(tx.value), l=getL(); if(l && !isNaN(v)){ l.x=v; draw(); } });
+    ty.addEventListener('input', ()=>{ const v=parseFloat(ty.value), l=getL(); if(l && !isNaN(v)){ l.y=v; draw(); } });
+    return { tx, ty, getL };
+  })();
   function syncTitleInputs(){
+    const tl = tocPosInputs.getL();
+    if (tl){
+      if (document.activeElement !== tocPosInputs.tx) tocPosInputs.tx.value = Math.round(tl.x);
+      if (document.activeElement !== tocPosInputs.ty) tocPosInputs.ty.value = Math.round(tl.y);
+    }
     layers.filter(l=>l.title).forEach(layer=>{
       const t = titleInputs[layer.id]; if (!t) return;
       t.row.classList.toggle('active', layer.id===selectedId);
