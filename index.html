@@ -1313,8 +1313,8 @@
   });
 
   // ---- month picker (auto background by year/month) ----
-  const MONTH_PICKER_YEAR_START = 2025;
-  const MONTH_PICKER_YEAR_END = 2030;
+  const MONTH_PICKER_YEAR_START = 2026;
+  const MONTH_PICKER_YEAR_END = 2027;
   const monthPicker = document.getElementById('monthPicker');
   for (let y = MONTH_PICKER_YEAR_START; y <= MONTH_PICKER_YEAR_END; y++){
     const og = document.createElement('optgroup');
@@ -1332,7 +1332,7 @@
     const val = e.target.value;
     if (!val) return;
     const [yearStr, mm] = val.split('-');
-    const path = 'src/assets/' + yearStr + '/' + yearStr + mm + '.jpg';
+    const path = 'src/assets/background/' + yearStr + mm + '.jpg';
     const img = new Image();
     img.onload = ()=>{
       bgImage = img;

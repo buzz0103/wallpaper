@@ -11,7 +11,7 @@
 | 사이트 노출 | `width: 80vw` (브라우저 크기에 따라 변동, 기본값 80vw) |
 | 최대 너비 | `max-width: 1440px` |
 | 모서리 | `border-radius: 80px` |
-| 배경 이미지 | `src/assets/{YYYY}/{YYYYMM}.jpg` — 캔버스 비율로 cover 채움 |
+| 배경 이미지 | `src/assets/background/{YYYYMM}.jpg` — 캔버스 비율로 cover 채움 |
 
 ## 2. 서체
 
@@ -108,7 +108,7 @@ DESIGN.md
 src/
   assets/
     Brand_logo.svg
-    {YYYY}/{YYYYMM}.jpg
+    background/{YYYYMM}.jpg
   fonts/
     EliceDXNeolliOTF-Light.woff2   (200)
     EliceDXNeolliOTF-Medium.woff2  (600)
