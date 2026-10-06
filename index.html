@@ -6,20 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&family=Jua&family=Do+Hyeon&family=Gothic+A1:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;800&family=Montserrat:wght@200;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&family=Jua&family=Do+Hyeon&family=Gothic+A1:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;800&family=Montserrat:wght@200;300;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* 한글: Elice DX Neolli (Light 200 / Medium 600 / Bold 700) — Montserrat(ExtraLight 200 / SemiBold 600 / Bold 700)와 굵기 숫자를 맞춤 */
+  /* 한글: Elice DX Neolli (Light 300 / Medium 500 / Bold 700). Montserrat은 타이틀용 ExtraLight 200 / SemiBold 600 / Bold 700 + 추가 텍스트용 300 / 500 도 함께 불러와요 */
   @font-face {
     font-family: 'Elice DX Neolli OTF';
     src: url('src/fonts/EliceDXNeolliOTF-Light.woff2') format('woff2');
-    font-weight: 200;
+    font-weight: 300;
     font-style: normal;
     font-display: swap;
   }
   @font-face {
     font-family: 'Elice DX Neolli OTF';
     src: url('src/fonts/EliceDXNeolliOTF-Medium.woff2') format('woff2');
-    font-weight: 600;
+    font-weight: 500;
     font-style: normal;
     font-display: swap;
   }
@@ -478,8 +478,8 @@
           <div class="field" id="weightFieldWrap">
             <label>굵기</label>
             <select id="fWeight">
-              <option value="200">가늘게 (Light)</option>
-              <option value="600">보통 (Medium)</option>
+              <option value="300">가늘게 (Light)</option>
+              <option value="500">보통 (Medium)</option>
               <option value="700">굵게 (Bold)</option>
             </select>
           </div>
@@ -530,7 +530,7 @@
 
   let layers = [
     { id:'titleMain',  name:'이달의 혜택', title:true, text:'이달의 혜택',
-      x:630, y:237, size:60,  font:"'Elice DX Neolli OTF', 'Montserrat', sans-serif", weight:'600',
+      x:630, y:237, size:60,  font:"'Elice DX Neolli OTF', 'Montserrat', sans-serif", weight:'500',
       color:'#6F4AC7', align:'right', lead:76/60, shadow:false },
     { id:'titleNum',   name:'월 숫자',     title:true, text:'1',
       x:630, y:362, size:152, font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'200',
@@ -560,16 +560,16 @@
   const fontsToLoad = [
     "16px 'Noto Sans KR'","16px 'Black Han Sans'","16px 'Jua'",
     "16px 'Do Hyeon'","16px 'Gothic A1'","16px 'Nanum Myeongjo'",
-    "200 16px 'Montserrat'","600 16px 'Montserrat'","700 16px 'Montserrat'","200 16px 'Elice DX Neolli OTF'","600 16px 'Elice DX Neolli OTF'","700 16px 'Elice DX Neolli OTF'"
+    "200 16px 'Montserrat'","300 16px 'Montserrat'","500 16px 'Montserrat'","600 16px 'Montserrat'","700 16px 'Montserrat'","300 16px 'Elice DX Neolli OTF'","500 16px 'Elice DX Neolli OTF'","700 16px 'Elice DX Neolli OTF'"
   ];
   const TOC_NUM_FONT = "'Elice DX Neolli OTF', sans-serif";
   const TOC_NUM_WEIGHT = '700';
   const TOC_CONTENT_FONT = "'Elice DX Neolli OTF', sans-serif";
-  const TOC_CONTENT_WEIGHT = '600';
+  const TOC_CONTENT_WEIGHT = '500';
   const TOC_CONTENT_WEIGHT_EMPHASIS = '700';
   const TOC_ANNOTATION_SIZE = 15;
   const TOC_ANNOTATION_COLOR = '#767676';
-  const TOC_ANNOTATION_WEIGHT = '600';
+  const TOC_ANNOTATION_WEIGHT = '500';
   const TOC_GAP = 0.35; // gap between number and content, as a multiple of font size
   function ensureFonts(cb){
     Promise.all(fontsToLoad.map(f=>document.fonts.load(f))).then(()=>{

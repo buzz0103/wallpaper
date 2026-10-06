@@ -15,12 +15,12 @@
 
 ## 2. 서체
 
-한글과 영문/숫자를 서로 다른 폰트로 쓰고, **굵기 숫자를 맞춰서** 한 번에 같은 굵기가 적용됩니다.
+한글은 Elice DX Neolli, 영문/숫자는 Montserrat을 함께 씁니다.
 
 | 용도 | 폰트 | Light | Medium | Bold |
 | --- | --- | --- | --- | --- |
-| 한글 | Elice DX Neolli OTF (`src/fonts/`) | 200 | 600 | 700 |
-| 영문 · 숫자 | Montserrat (Google Fonts) | ExtraLight 200 | SemiBold 600 | Bold 700 |
+| 한글 · 목차 전체 | Elice DX Neolli OTF (`src/fonts/`) | **300** | **500** | 700 |
+| 영문 · 숫자 (타이틀) | Montserrat (Google Fonts) | ExtraLight 200 | SemiBold 600 | Bold 700 |
 
 ```css
 font-family: 'Montserrat', 'Elice DX Neolli OTF', sans-serif;
@@ -28,10 +28,14 @@ font-family: 'Montserrat', 'Elice DX Neolli OTF', sans-serif;
 
 Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX Neolli로 대체됩니다.
 
-### 굵기 선택 (UI)
+- Elice 굵기 숫자: Light 300 / Medium 500 / Bold 700 (`@font-face`의 `font-weight`)
+- 타이틀 영문·숫자는 Montserrat 고유 굵기(ExtraLight 200 / SemiBold 600 / Bold 700)를 그대로 사용
+- 추가 텍스트처럼 두 폰트를 같이 쓰는 경우를 위해 Montserrat도 300 / 500을 불러와서 Elice와 같은 숫자로 맞춤
 
-- 가늘게 (Light) = 200
-- 보통 (Medium) = 600
+### 굵기 선택 (UI, 추가 텍스트)
+
+- 가늘게 (Light) = 300
+- 보통 (Medium) = 500
 - 굵게 (Bold) = 700
 
 ## 3. 로고
@@ -47,7 +51,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 | 항목 | 예시 | 폰트 | 크기 | 줄간격 | 기본 Y |
 | --- | --- | --- | --- | --- | --- |
-| 이달의 혜택 | 이달의 혜택 | Elice DX Neolli Medium (600) | 60px | 76px | 237 |
+| 이달의 혜택 | 이달의 혜택 | Elice DX Neolli Medium (500) | 60px | 76px | 237 |
 | 월 숫자 | 1 | Montserrat ExtraLight (200) | 152px | 130px | 362 |
 | 영문 월 | JANUARY | Montserrat SemiBold (600), 대문자 | 24px | 약 29px | 433 |
 | 연도 | 2027 | Montserrat Bold (700) | 24px | 약 29px | 462 |
@@ -60,7 +64,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 - 기본 위치: x 700, y 405 (왼쪽 정렬), 크기 22px, 줄간격 2.3배 — 목차 블록의 세로 중심이 캔버스 높이의 45% 지점 (900 × 0.45). 목차 카드의 X/Y 입력으로 조절
 - 항목 최대 **14개**, 순서대로 번호가 붙습니다.
-- 번호: Elice DX Neolli Bold(700) / 내용: Elice DX Neolli Medium(600) — 번호와 내용 모두 Elice로 통일해서 글줄 높이를 맞춤.
+- 번호: Elice DX Neolli Bold(700) / 내용: Elice DX Neolli Medium(500) — 번호와 내용 모두 Elice로 통일해서 글줄 높이를 맞춤.
 - **번호와 내용은 같은 크기**이고, 크기 값을 키우면 함께 커집니다.
 - 번호 칸은 고정 너비라서 한 자리/두 자리 번호도 내용 시작 위치가 같습니다.
 - 인라인 서식
@@ -134,7 +138,7 @@ src/
     Brand_logo.svg
     background/{YYYYMM}.jpg
   fonts/
-    EliceDXNeolliOTF-Light.woff2   (200)
-    EliceDXNeolliOTF-Medium.woff2  (600)
+    EliceDXNeolliOTF-Light.woff2   (300)
+    EliceDXNeolliOTF-Medium.woff2  (500)
     EliceDXNeolliOTF-Bold.woff2    (700)
 ```
