@@ -315,6 +315,12 @@
   .editor-inner{ margin-top:0; }
   #hostExtra .editor-inner{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
   .title-row .t-color{ width:40px; height:36px; padding:2px; flex:0 0 40px; }
+  .color-wrap{ display:flex; flex-direction:column; align-items:center; gap:4px; flex:0 0 auto; }
+  .color-wrap input[type="color"]{ flex:0 0 auto !important; }
+  .acc-body input.hex-val{
+    width:76px; padding:4px 4px; font-size:11.5px; font-family:ui-monospace,Consolas,monospace;
+    text-align:center; letter-spacing:.02em; text-transform:uppercase; border-radius:7px; border-width:1px;
+  }
 </style>
 </head>
 <body>
@@ -1614,6 +1620,37 @@
 
     downloadTextFile(`wallpaper_${yy}${mm}.php`, buildWallpaperPhp(yy, mm), 'application/octet-stream');
   });
+
+  // ---- 색상 피커 아래에 #RRGGBB 값 표시 (직접 입력도 가능) ----
+  const hexPairs = [];
+  document.querySelectorAll('input[type="color"]').forEach(cp=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'color-wrap';
+    cp.parentNode.insertBefore(wrap, cp);
+    wrap.appendChild(cp);
+    const hx = document.createElement('input');
+    hx.type = 'text'; hx.className = 'hex-val'; hx.maxLength = 7; hx.spellcheck = false;
+    hx.setAttribute('aria-label', '색상 값 (#RRGGBB)');
+    wrap.appendChild(hx);
+    hx.addEventListener('input', ()=>{
+      let v = hx.value.trim();
+      if (v && v[0] !== '#') v = '#' + v;
+      if (/^#[0-9a-fA-F]{6}$/.test(v)){
+        cp.value = v.toLowerCase();
+        cp.dispatchEvent(new Event('input', {bubbles:true}));
+        cp.dispatchEvent(new Event('change', {bubbles:true}));
+      }
+    });
+    hx.addEventListener('blur', ()=>{ hx.value = cp.value.toUpperCase(); });
+    cp.addEventListener('input', ()=>{ hx.value = cp.value.toUpperCase(); });
+    hexPairs.push([cp, hx]);
+  });
+  function syncHex(){
+    hexPairs.forEach(([cp,hx])=>{ if (document.activeElement !== hx) hx.value = cp.value.toUpperCase(); });
+  }
+  const _draw = draw;
+  draw = function(){ _draw(); syncHex(); };
+  syncHex();
 
   ensureFonts(()=>{
     renderLayerList();
