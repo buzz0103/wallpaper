@@ -1214,10 +1214,20 @@
     }
     walk(doc.body);
     const out = [];
+    // 문서 전체의 '본문 글자 크기' 기준 구하기 (글자 수가 가장 많은 크기).
+    // 본문 크기가 서식에 직접 적혀 있지 않으면(스타일로만 지정) 10pt(≈13.3px)로 가정해요.
+    const BODY_FALLBACK_PX = 10*4/3;
+    const sizeChars = new Map(); let unknownChars = 0;
+    lines.forEach(segs=>segs.forEach(sg=>{
+      const n = sg.text.trim().length; if (!n) return;
+      if (sg.size) sizeChars.set(sg.size, (sizeChars.get(sg.size)||0) + n); else unknownChars += n;
+    }));
+    let docBase = BODY_FALLBACK_PX, bestN = unknownChars;
+    sizeChars.forEach((n, sz)=>{ if (n > bestN){ bestN = n; docBase = sz; } });
     lines.forEach(segs=>{
       if (!segs.some(sg=>sg.text.trim())) return;
-      const sizes = segs.filter(sg=>sg.size).map(sg=>sg.size);
-      const base = sizes.length ? Math.max(...sizes) : null;
+      const lineSizes = segs.filter(sg=>sg.size).map(sg=>sg.size);
+      const base = Math.max(docBase, ...(lineSizes.length ? lineSizes : [0]));
       const typed = segs.map(sg=>{
         const [r,g,b] = sg.color;
         const spread = Math.max(r,g,b) - Math.min(r,g,b);
