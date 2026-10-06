@@ -161,7 +161,7 @@
     color:var(--body);
     margin-bottom:8px;
   }
-  input[type="text"], textarea, select, input[type="number"]{
+  input[type="text"], textarea, select, input[type="number"], input[type="date"]{
     display:block;
     width:100%;
     height:40px;
@@ -176,7 +176,7 @@
   }
   input::placeholder, textarea::placeholder{ color:var(--placeholder); }
   textarea{ height:auto; min-height:72px; padding:10px 12px; resize:vertical; line-height:20px; }
-  input[type="text"]:focus, textarea:focus, select:focus, input[type="number"]:focus{
+  input[type="text"]:focus, textarea:focus, select:focus, input[type="number"]:focus, input[type="date"]:focus{
     outline:none;
     border-color:var(--primary);
     background:var(--surface);
@@ -322,6 +322,11 @@
         <input type="file" id="bgInput" accept="image/*">
       </label>
       <div class="hint">1440×900 권장</div>
+      <div class="field" style="margin:16px 0 0;">
+        <label for="switchDate">다음 달 내용으로 전환할 날짜 (PHP, 선택)</label>
+        <input type="date" id="switchDate">
+        <div class="hint">날짜를 고르면 PHP에 if문이 들어가서, 그날부터(한국시간) 다음 달 내용이 나와요. 비워두면 이번 달만 나와요.</div>
+      </div>
       </div>
     </section>
 
@@ -1602,10 +1607,47 @@
     tctx.drawImage(bgImage, 0, 0, tmp.width, tmp.height);
     return tmp.toDataURL('image/jpeg', JPG_QUALITY);
   }
-  function buildWallpaperPhp(yy, mm){
+  // 해당 월의 화면 블록 (주석 + div + style). 연/월에 따라 id·이미지 파일명이 정해져요.
+  function wallpaperBlock(yy, mm){
     const id = 'wrap_ev_bg_' + yy + mm;
     const monthLabel = yy + '년 ' + parseInt(mm,10) + '월';
-    return '<!DOCTYPE html>\n' +
+    return '<!-- ' + monthLabel + ' -->\n' +
+'<div id="' + id + '">\n' +
+'\t<div class="content"><img src="wallpaper_' + yy + mm + '.jpg" alt="이달의혜택 "></div>\n' +
+'</div>\n' +
+'\n' +
+'<style>\n' +
+'\n' +
+'body, html { width: 100%; height: 100%; margin: 0; padding: 0;  }\n' +
+'\n' +
+'/* ' + monthLabel + ' */\n' +
+'#' + id + ' .content img {width:80vw; max-width:1440px; height:auto; margin: 0 auto; border-radius: min(80px, 4vw); box-shadow: 0 4px 12px rgba(0,0,0,.1);}\n' +
+'#' + id + ' .content {display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh;}\n' +
+'#' + id + ' {position: relative; width: 100%; height: 100%; overflow: hidden;}\n' +
+'#' + id + '::before {content: ""; position: absolute; top: 0; left: 0; width: 120%; height: 120%; background: url(wallpaper_bg_' + yy + mm + '.jpg?' + yy + mm + ') no-repeat 50% 50%; background-size: cover; filter: blur(10px); z-index: -1;}\n' +
+'\n' +
+'</style>\n';
+  }
+  function nextYearMonth(yy, mm){
+    let y = 2000 + parseInt(yy,10), m = parseInt(mm,10) + 1;
+    if (m > 12){ m = 1; y += 1; }
+    return { yy: String(y).slice(-2), mm: String(m).padStart(2,'0') };
+  }
+  // switchDate(YYYY-MM-DD)가 있으면 그날부터 다음 달 내용이 나오도록 PHP if문으로 감싸요.
+  function buildWallpaperPhp(yy, mm, switchDate){
+    const nx = nextYearMonth(yy, mm);
+    let phpHead = '', body;
+    if (switchDate){
+      phpHead = '<?php\n' +
+'// 노출 전환일(한국시간, Y-m-d): 이 날짜부터 다음 달(' + nx.yy + '년 ' + parseInt(nx.mm,10) + '월) 내용이 나와요. 그 전에는 이번 달(' + yy + '년 ' + parseInt(mm,10) + '월) 내용이에요.\n' +
+'$switchDate = \'' + switchDate + '\';\n' +
+'$today = (new DateTime(\'now\', new DateTimeZone(\'Asia/Seoul\')))->format(\'Y-m-d\');\n' +
+'?>\n';
+      body = '<?php if ($today >= $switchDate) { ?>\n' + wallpaperBlock(nx.yy, nx.mm) + '<?php } else { ?>\n' + wallpaperBlock(yy, mm) + '<?php } ?>\n';
+    } else {
+      body = wallpaperBlock(yy, mm);
+    }
+    return phpHead + '<!DOCTYPE html>\n' +
 '<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">\n' +
 '<head>\n' +
 '    <title>YBM어학원 토익 실제문제로 수업중</title>\n' +
@@ -1638,22 +1680,7 @@
 '\n' +
 '<body>\n' +
 '\n' +
-'<!-- ' + monthLabel + ' -->\n' +
-'<div id="' + id + '">\n' +
-'\t<div class="content"><img src="wallpaper_' + yy + mm + '.jpg" alt="이달의혜택 "></div>\n' +
-'</div>\n' +
-'\n' +
-'<style>\n' +
-'\n' +
-'body, html { width: 100%; height: 100%; margin: 0; padding: 0;  }\n' +
-'\n' +
-'/* ' + monthLabel + ' */\n' +
-'#' + id + ' .content img {width:80vw; max-width:1440px; height:auto; margin: 0 auto; border-radius: min(80px, 4vw); box-shadow: 0 4px 12px rgba(0,0,0,.1);}\n' +
-'#' + id + ' .content {display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh;}\n' +
-'#' + id + ' {position: relative; width: 100%; height: 100%; overflow: hidden;}\n' +
-'#' + id + '::before {content: ""; position: absolute; top: 0; left: 0; width: 120%; height: 120%; background: url(wallpaper_bg_' + yy + mm + '.jpg?' + yy + mm + ') no-repeat 50% 50%; background-size: cover; filter: blur(10px); z-index: -1;}\n' +
-'\n' +
-'</style>\n' +
+body +
 '</body>\n' +
 '</html>\n';
   }
@@ -1672,6 +1699,11 @@
     }
     const yy = yearText.slice(-2);
     const mm = String(parseInt(monthText,10)).padStart(2,'0');
+    const switchDateVal = (document.getElementById('switchDate').value || '').trim();
+    if (switchDateVal && !/^\d{4}-\d{2}-\d{2}$/.test(switchDateVal)){
+      alert('전환 날짜 형식이 올바르지 않아요.');
+      return;
+    }
 
     exportAs('image/jpeg', `wallpaper_${yy}${mm}.jpg`);
 
@@ -1683,7 +1715,7 @@
     bgLink.click();
     document.body.removeChild(bgLink);
 
-    downloadTextFile(`wallpaper_${yy}${mm}.php`, buildWallpaperPhp(yy, mm), 'application/octet-stream');
+    downloadTextFile(`wallpaper_${yy}${mm}.php`, buildWallpaperPhp(yy, mm, switchDateVal), 'application/octet-stream');
   });
 
   // ---- 색상 피커 아래에 #RRGGBB 값 표시 (직접 입력도 가능) ----

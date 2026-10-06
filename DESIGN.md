@@ -104,6 +104,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 - PNG / JPG: 선택 테두리 없이 1440 × 900으로 저장 (JPG 품질 95, 코드의 `JPG_QUALITY = 0.95`)
 - 사이트용 PHP 세트: `wallpaper_{yy}{mm}.jpg`, `wallpaper_bg_{yy}{mm}.jpg`(블러 배경), `wallpaper_{yy}{mm}.php`
+- **다음 달 자동 전환 (선택)**: 배경 카드의 `다음 달 내용으로 전환할 날짜`를 고르면 PHP 상단에 `$switchDate`와 `if ($today >= $switchDate)`가 들어가서, 그날부터(한국시간 Asia/Seoul) 다음 달 블록(`wrap_ev_bg_{다음달}`, `wallpaper_{다음달}.jpg`, `wallpaper_bg_{다음달}.jpg`)이 나오고 그 전에는 이번 달 블록이 나옴. 날짜를 비우면 기존과 같은 PHP. 12월은 다음 해 1월로 넘어감. **다음 달 이미지 파일(`wallpaper_*.jpg`, `wallpaper_bg_*.jpg`)은 따로 만들어 같은 폴더에 올려야 함**
 - 블러 배경 CSS: `::before { width:120%; height:120%; background-size:cover; filter:blur(10px) }` (부모 `overflow:hidden`)
 
 ## 8-0. 화면 레이아웃
