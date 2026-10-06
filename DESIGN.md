@@ -10,7 +10,7 @@
 | 캔버스 크기 | **1440 × 900 px** |
 | 사이트 노출 | `width: 80vw` (브라우저 크기에 따라 변동, 기본값 80vw) |
 | 최대 너비 | `max-width: 1440px` |
-| 모서리 | `border-radius: 80px` |
+| 모서리 | `border-radius: 80px` (캔버스) · 사이트용 PHP는 반응형 `min(80px, 4.4444vw)` — 이미지 너비에 비례하고 최대 80px |
 | 배경 이미지 | `src/assets/background/{YYYYMM}.jpg` — 캔버스 비율로 cover 채움. 연/월 목록은 2026~2028년 (코드의 `MONTH_PICKER_YEAR_START/END`) |
 
 ## 2. 서체
