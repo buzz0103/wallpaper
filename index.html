@@ -384,16 +384,17 @@
           <label>목차 항목 (최대 14개, 순서대로 번호가 붙어요)</label>
           <div id="tocItems"></div>
           <button class="btn-ghost" id="addTocItem" style="width:100%;margin-top:6px;">+ 항목 추가</button>
+          <button class="btn-ghost" id="tocDocBtn" style="width:100%;margin-top:6px;">doc에서 복사해서 붙여넣기</button>
           <button class="btn-ghost" id="tocFileBtn" style="width:100%;margin-top:6px;">메모장(.txt) 파일 업로드</button>
           <input type="file" id="tocFileInput" accept=".txt,text/plain" style="display:none;">
           <div id="tocImportBox" style="display:none;margin-top:8px;">
-            <textarea id="tocImportText" placeholder="메모장 내용을 확인한 뒤 적용을 눌러주세요. (한 줄 = 한 항목, 최대 14줄)" style="min-height:90px;"></textarea>
+            <textarea id="tocImportText" placeholder="doc에서 목차를 복사해 여기에 붙여넣으세요(Ctrl+V). 빨간·굵은 글씨는 **강조**, 작은·회색 글씨는 !주석!으로 바뀌어요. 내용을 확인한 뒤 적용을 눌러주세요. (한 줄 = 한 항목, 최대 14줄)" style="min-height:90px;"></textarea>
             <div class="row" style="margin-top:6px;">
               <button class="btn-ghost" id="tocImportCancel">취소</button>
               <button class="btn-primary" id="tocImportApply">적용</button>
             </div>
           </div>
-          <div class="hint">한 줄 = 한 항목, 최대 14줄. 메모장 파일도 같은 규칙이에요.<br>항목 안에서 <b>**강조할 텍스트**</b>처럼 별표 두 개로 감싸면 그 부분만 강조 색상으로 표시돼요.<br><b>!작은 글씨!</b>처럼 느낌표로 감싸면 15px, #767676 색상의 작은 주석 글씨로 표시돼요.</div>
+          <div class="hint">한 줄 = 한 항목, 최대 14줄. 메모장 파일도 같은 규칙이에요.<br><b>doc에서 복사해서 붙여넣기</b>는 Word·구글 문서에서 복사하면 서식을 읽어서 자동으로 변환해요. (번호는 자동으로 붙으니 문서의 앞 번호는 지워져요)<br>항목 안에서 <b>**강조할 텍스트**</b>처럼 별표 두 개로 감싸면 그 부분만 강조 색상으로 표시돼요.<br><b>!작은 글씨!</b>처럼 느낌표로 감싸면 15px, #767676 색상의 작은 주석 글씨로 표시돼요.</div>
           <div class="row tight" style="margin-top:8px;">
             <label style="margin:0;flex:0 0 auto;">강조 색상</label>
             <input type="color" id="fTocEmphasisColor" style="flex:0 0 40px;">
@@ -1147,6 +1148,126 @@
     reader.readAsText(file, 'UTF-8');
     e.target.value = '';
   });
+
+  // ---- doc(Word·구글 문서)에서 복사한 서식 → 목차 규칙(**강조** / !주석!) 변환 ----
+  const _colorCv = document.createElement('canvas'); _colorCv.width = _colorCv.height = 1;
+  const _colorCtx = _colorCv.getContext('2d', {willReadFrequently:true});
+  function parseCssColor(str){
+    if (!str) return null;
+    str = String(str).trim().toLowerCase();
+    if (!str || str==='inherit' || str==='initial' || str==='transparent') return null;
+    if (str==='windowtext' || str==='auto') return [0,0,0];
+    _colorCtx.clearRect(0,0,1,1);
+    _colorCtx.fillStyle = '#000';
+    _colorCtx.fillStyle = str;
+    _colorCtx.fillRect(0,0,1,1);
+    const d = _colorCtx.getImageData(0,0,1,1).data;
+    return [d[0], d[1], d[2]];
+  }
+  function parseFontSizePx(str){
+    if (!str) return null;
+    const m = String(str).trim().toLowerCase().match(/^([\d.]+)\s*(pt|px)?$/);
+    if (!m) return null;
+    const v = parseFloat(m[1]);
+    return m[2]==='pt' ? v*4/3 : v;
+  }
+  function richHtmlToTocLines(html){
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('style,script,head,meta,title').forEach(n=>n.remove());
+    const BLOCK = new Set(['P','LI','DIV','H1','H2','H3','H4','H5','H6','TR','BR','UL','OL','TABLE','TBODY','BLOCKQUOTE']);
+    const lines = [[]];
+    function styleOf(node){
+      let bold=null, color=null, size=null;
+      for (let el=node.parentElement; el && el!==doc.documentElement; el=el.parentElement){
+        const st = el.style || {};
+        if (bold===null){
+          const fw = (st.fontWeight||'').toLowerCase();
+          if (fw) bold = (fw==='bold' || fw==='bolder' || parseInt(fw,10)>=600);
+          else if (el.tagName==='B' || el.tagName==='STRONG') bold = true;
+        }
+        if (color===null){
+          const c = parseCssColor(st.color || (el.tagName==='FONT' ? el.getAttribute('color') : ''));
+          if (c) color = c;
+        }
+        if (size===null){
+          const sz = parseFontSizePx(st.fontSize);
+          if (sz) size = sz;
+        }
+      }
+      return { bold: !!bold, color: color || [0,0,0], size };
+    }
+    function walk(node){
+      if (node.nodeType===3){
+        const text = node.nodeValue.replace(/[ \s]+/g,' ');
+        if (!text.trim() && !text) return;
+        lines[lines.length-1].push({ text, ...styleOf(node) });
+        return;
+      }
+      if (node.nodeType!==1) return;
+      const tag = node.tagName;
+      if (tag==='BR'){ lines.push([]); return; }
+      const isBlock = BLOCK.has(tag);
+      if (isBlock && lines[lines.length-1].length) lines.push([]);
+      if (tag==='TD' || tag==='TH'){ if (lines[lines.length-1].length) lines[lines.length-1].push({text:' ', bold:false, color:[0,0,0], size:null}); }
+      node.childNodes.forEach(walk);
+      if (isBlock && lines[lines.length-1].length) lines.push([]);
+    }
+    walk(doc.body);
+    const out = [];
+    lines.forEach(segs=>{
+      if (!segs.some(sg=>sg.text.trim())) return;
+      const sizes = segs.filter(sg=>sg.size).map(sg=>sg.size);
+      const base = sizes.length ? Math.max(...sizes) : null;
+      const typed = segs.map(sg=>{
+        const [r,g,b] = sg.color;
+        const spread = Math.max(r,g,b) - Math.min(r,g,b);
+        const lum = 0.299*r + 0.587*g + 0.114*b;
+        const colored = spread > 40;
+        const gray = !colored && lum >= 90 && lum <= 200;
+        const small = base && sg.size && sg.size < base*0.88;
+        let type = 'normal';
+        if (small || gray) type = 'annotation';
+        else if (sg.bold || colored) type = 'emphasis';
+        return { text: sg.text, type };
+      });
+      // 같은 종류끼리 합치기
+      const merged = [];
+      typed.forEach(t=>{
+        const last = merged[merged.length-1];
+        if (last && last.type===t.type) last.text += t.text; else merged.push({...t});
+      });
+      // 맨 앞 번호/글머리표 제거 (번호는 자동으로 붙어요)
+      if (merged.length){
+        merged[0].text = merged[0].text.replace(/^\s*(?:\d{1,2}[.)](?!\d)|[①-⑳]|[-•·▪●○■□▶►])\s*/, '');
+      }
+      let line = '';
+      merged.forEach(m=>{
+        const lead = m.text.match(/^\s*/)[0], trail = m.text.match(/\s*$/)[0];
+        const core = m.text.trim();
+        if (!core){ line += m.text; return; }
+        if (m.type==='emphasis') line += lead + '**' + core + '**' + trail;
+        else if (m.type==='annotation') line += lead + '!' + core + '!' + trail;
+        else line += m.text;
+      });
+      line = line.replace(/\s+/g,' ').trim();
+      if (line) out.push(line);
+    });
+    return out.join('\n');
+  }
+  const tocDocBtn = document.getElementById('tocDocBtn');
+  tocDocBtn.addEventListener('click', ()=>{
+    tocImportBox.style.display = 'block';
+    tocImportText.focus();
+  });
+  tocImportText.addEventListener('paste', (e)=>{
+    const html = e.clipboardData && e.clipboardData.getData('text/html');
+    if (!html) return; // 서식 없는 글자는 그대로 붙여넣기
+    const converted = richHtmlToTocLines(html);
+    if (!converted.trim()) return;
+    e.preventDefault();
+    tocImportText.value = converted;
+  });
+
   tocImportCancel.addEventListener('click', ()=>{
     tocImportBox.style.display = 'none';
     tocImportText.value = '';
