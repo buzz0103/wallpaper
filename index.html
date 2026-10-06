@@ -260,6 +260,113 @@
     color:var(--muted);
     margin-bottom:8px;
   }
+
+  /* ---- Canva-style tab bar ---- */
+  aside{ padding:0 20px 20px; }
+  .tab-bar{
+    display:flex;
+    gap:6px;
+    padding:14px 0 12px;
+    background:var(--panel);
+    position:sticky;
+    top:0;
+    z-index:5;
+    border-bottom:1px solid var(--line);
+    margin-bottom:18px;
+  }
+  .tab-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    padding:11px 4px;
+    border:none;
+    border-radius:12px;
+    background:#f1f0ed;
+    color:var(--muted);
+    font-size:12.5px;
+    font-weight:600;
+    font-family:inherit;
+    cursor:pointer;
+    transition:background .15s, color .15s, transform .1s;
+  }
+  .tab-btn .tab-icon{font-size:21px;line-height:1;}
+  .tab-btn:hover{background:#e9e7e3;color:var(--ink);}
+  .tab-btn:active{transform:scale(0.97);}
+  .tab-btn.active{background:var(--red);color:#fff;box-shadow:0 2px 6px rgba(204,32,48,.3);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ---- Bigger, clearer controls ---- */
+  .block{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .block:last-child{margin-bottom:0;}
+  .block h2{
+    font-size:14px;
+    font-weight:800;
+    letter-spacing:0;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin:0 0 14px;
+  }
+  .block h2 .h2-icon{font-size:16px;}
+  .field label{
+    font-size:12.5px;
+    font-weight:600;
+    color:#555;
+    margin-bottom:6px;
+  }
+  input[type="text"], textarea, select, input[type="number"]{
+    padding:11px 12px;
+    font-size:14.5px;
+    border-radius:9px;
+    border-width:1.5px;
+  }
+  input[type="color"]{
+    width:48px;height:40px;border-radius:9px;border-width:1.5px;
+  }
+  button{font-size:14px;}
+  .btn-primary{
+    padding:13px 16px;
+    font-size:15px;
+    border-radius:10px;
+    font-weight:700;
+  }
+  .btn-ghost{
+    padding:12px 14px;
+    font-size:14px;
+    border-radius:10px;
+    border-width:1.5px;
+    font-weight:600;
+  }
+  .file-drop{
+    padding:20px 14px;
+    font-size:14px;
+    font-weight:600;
+    border-radius:12px;
+    border-width:2px;
+  }
+  .layer-chip{
+    padding:12px 14px;
+    font-size:14px;
+    border-radius:10px;
+    border-width:1.5px;
+  }
+  .layer-chip .del{font-size:17px;padding:4px 6px;}
+  .toc-row .toc-btn{
+    width:28px;height:28px;font-size:13px;border-radius:7px;
+  }
+  .toc-row input[type="text"]{padding:9px 10px;font-size:13.5px;}
+  .export-row button{padding:14px;font-size:15px;}
 </style>
 </head>
 <body>
@@ -272,8 +379,22 @@
 <div class="layout">
   <aside>
 
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabBtn-bg" data-tab="bg" type="button">
+        <span class="tab-icon">🖼️</span>배경
+      </button>
+      <button class="tab-btn" id="tabBtn-text" data-tab="text" type="button">
+        <span class="tab-icon">🔤</span>텍스트
+      </button>
+      <button class="tab-btn" id="tabBtn-footer" data-tab="footer" type="button">
+        <span class="tab-icon">🏷️</span>하단배너
+      </button>
+    </div>
+
+    <div class="tab-panel active" id="tabPanel-bg" data-tab="bg">
+
     <div class="block">
-      <h2>1. 배경 이미지</h2>
+      <h2><span class="h2-icon">🖼️</span>배경 이미지</h2>
       <div class="field" style="margin-bottom:10px;">
         <label>연/월 선택 (배경 자동 불러오기)</label>
         <select id="monthPicker">
@@ -287,14 +408,18 @@
       <div class="hint">1440×900 권장, 자동으로 채워짐</div>
     </div>
 
+    </div>
+
+    <div class="tab-panel" id="tabPanel-text" data-tab="text">
+
     <div class="block">
-      <h2>2. 텍스트 레이어</h2>
+      <h2><span class="h2-icon">🔤</span>텍스트 레이어</h2>
       <div class="layer-list" id="layerList"></div>
       <button class="btn-ghost" id="addBanner" style="width:100%;">+ 배너 텍스트 추가</button>
     </div>
 
     <div class="block" id="editorBlock">
-      <h2>3. 선택한 텍스트 편집</h2>
+      <h2><span class="h2-icon">✏️</span>선택한 텍스트 편집</h2>
       <div id="editorEmpty" class="hint">왼쪽 목록에서 텍스트를 선택하거나<br>캔버스의 글자를 클릭하세요.</div>
       <div id="editorForm" style="display:none;">
         <div class="field" id="textEditorField">
@@ -407,8 +532,12 @@
       </div>
     </div>
 
+    </div>
+
+    <div class="tab-panel" id="tabPanel-footer" data-tab="footer">
+
     <div class="block">
-      <h2>4. 하단 배너 이미지</h2>
+      <h2><span class="h2-icon">🏷️</span>하단 배너 이미지</h2>
       <div class="field row tight" style="margin-bottom:12px;">
         <label style="margin:0;flex:0 0 auto;">배너 표시</label>
         <input type="checkbox" id="footerEnable" style="width:auto;">
@@ -418,6 +547,8 @@
         <input type="file" id="footerInput" accept="image/*">
       </label>
       <div class="hint">기본 위치는 하단 중앙이며, 캔버스에서 드래그로 옮길 수 있어요. 모서리는 24px 둥글게 처리돼요.</div>
+    </div>
+
     </div>
 
   </aside>
@@ -476,6 +607,19 @@
   let selectedId = layers[0].id;
   let dragging = null;
   let dragOffset = {x:0,y:0};
+
+  // ---- tab bar (Canva-style) ----
+  function switchTab(name){
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.tab === name);
+    });
+    document.querySelectorAll('.tab-panel').forEach(panel=>{
+      panel.classList.toggle('active', panel.dataset.tab === name);
+    });
+  }
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+  });
 
   const fontsToLoad = [
     "16px 'Noto Sans KR'","16px 'Black Han Sans'","16px 'Jua'",
@@ -772,7 +916,7 @@
         renderLayerList(); renderEditor(); draw();
       };
       chip.appendChild(del);
-      chip.onclick = ()=>{ selectedId = layer.id; renderLayerList(); renderEditor(); draw(); };
+      chip.onclick = ()=>{ selectedId = layer.id; renderLayerList(); renderEditor(); draw(); switchTab('text'); };
       list.appendChild(chip);
     });
   }
@@ -1054,6 +1198,7 @@
     layers.push(layer);
     selectedId = id;
     renderLayerList(); renderEditor(); draw();
+    switchTab('text');
   });
 
   // ---- background upload ----
@@ -1185,6 +1330,7 @@
       dragOffset.y = pos.y - hit.y;
       cv.classList.add('dragging');
       renderLayerList(); renderEditor(); draw();
+      switchTab(hit.id === 'footerBanner' ? 'footer' : 'text');
     }
   }
   function pointerMove(evt){
