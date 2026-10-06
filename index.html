@@ -1342,6 +1342,7 @@
   window.addEventListener('touchend', pointerUp);
 
   // ---- export ----
+  const JPG_QUALITY = 0.8; // JPG 저장 품질 (0~1, 0.8 = 80)
   function exportAs(type, filename){
     const prevSelected = selectedId;
     selectedId = null;
@@ -1358,7 +1359,7 @@
       tctx.fillStyle = '#ffffff';
       tctx.fillRect(0,0,W,H);
       tctx.drawImage(cv,0,0);
-      dataUrl = tmp.toDataURL('image/jpeg', 0.92);
+      dataUrl = tmp.toDataURL('image/jpeg', JPG_QUALITY);
     } else {
       dataUrl = cv.toDataURL('image/png');
     }
@@ -1408,7 +1409,7 @@
     tctx.fillStyle = '#ffffff';
     tctx.fillRect(0,0,tmp.width,tmp.height);
     tctx.drawImage(bgImage, 0, 0, tmp.width, tmp.height);
-    return tmp.toDataURL('image/jpeg', 0.92);
+    return tmp.toDataURL('image/jpeg', JPG_QUALITY);
   }
   function buildWallpaperPhp(yy, mm){
     const id = 'wrap_ev_bg_' + yy + mm;

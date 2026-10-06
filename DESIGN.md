@@ -98,7 +98,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 ## 8. 저장 규칙
 
-- PNG / JPG: 선택 테두리 없이 1440 × 900으로 저장
+- PNG / JPG: 선택 테두리 없이 1440 × 900으로 저장 (JPG 품질 80, 코드의 `JPG_QUALITY = 0.8`)
 - 사이트용 PHP 세트: `wallpaper_{yy}{mm}.jpg`, `wallpaper_bg_{yy}{mm}.jpg`(블러 배경), `wallpaper_{yy}{mm}.php`
 
 ## 8-1. 컨트롤 패널 (왼쪽 메뉴)
