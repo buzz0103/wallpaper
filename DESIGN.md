@@ -11,7 +11,7 @@
 | 사이트 노출 | `width: 80vw` (브라우저 크기에 따라 변동, 기본값 80vw) |
 | 최대 너비 | `max-width: 1440px` |
 | 모서리 | `border-radius: 80px` |
-| 배경 이미지 | `src/assets/background/{YYYYMM}.jpg` — 캔버스 비율로 cover 채움 |
+| 배경 이미지 | `src/assets/background/{YYYYMM}.jpg` — 캔버스 비율로 cover 채움. 연/월 목록은 2026~2028년 (코드의 `MONTH_PICKER_YEAR_START/END`) |
 
 ## 2. 서체
 
