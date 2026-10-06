@@ -72,26 +72,29 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 
 - 그 외 배너 문구 레이어: 기본 x 720, y 780, 48px, Bold, 가운데 정렬
 
-## 7. 도구 UI 스타일 (Toss 디자인 시스템 기준)
+## 7. 도구 UI 스타일 (LINE 디자인 시스템 기준)
 
-`.claude/design-systems/toss.md`를 따릅니다. 배너(캔버스) 디자인과는 별개로 **도구 화면**에만 적용됩니다.
+`.claude/design-systems/line.md`를 따릅니다. 배너(캔버스) 디자인과는 별개로 **도구 화면**에만 적용됩니다.
 
 | 토큰 | 값 | 용도 |
 | --- | --- | --- |
-| `--primary` | `#3182F6` | 포인트, 주요 버튼, 선택 표시 |
-| `--primary-hover` | `#1B6BE0` | 주요 버튼 hover |
-| `--ink` | `#191F28` | 제목 · 본문 강조 |
-| `--body` | `#4E5968` | 보조 설명 |
-| `--inactive` | `#8B95A1` | 비활성 · 아이콘 |
-| `--bg` | `#F9FAFB` | 작업 영역 배경 |
-| `--surface` | `#FFFFFF` | 패널 · 카드 |
-| `--line` | `#E5E8EB` | 구분선 |
-| `--error` | `#F04452` | 오류 |
+| `--primary` | `#06C755` | LINE Green — 주요 버튼, 선택 표시 |
+| `--ink` | `#000000` | 제목 · 본문 강조 |
+| `--body` | `#777777` | 보조 텍스트 (gray-600) |
+| `--inactive` | `#949494` | 도움말 (gray-500) |
+| `--bg` | `#F5F5F5` | 작업 영역 · 입력창 배경 (gray-150) |
+| `--surface` | `#FFFFFF` | 패널 |
+| `--line` | `#EFEFEF` | 구분선 (gray-200) |
+| `--border` | `#DFDFDF` | 기본 보더 (gray-300) |
+| `--placeholder` | `#C8C8C8` | placeholder (gray-350) |
+| `--disabled` | `#E4E4E4` | 비활성 |
+| `--error` | `#E8332E` | 오류 |
 
-- 서체: `SUIT`, `Pretendard`, `Noto Sans KR`, 시스템 sans-serif (Pretendard는 CDN 로드)
-- 입력창 · 버튼 높이 40px (저장 버튼 50px), 모서리 입력 6px / 버튼 8px
-- 아코디언은 카드 대신 구분선 방식, 그림자·그라데이션 사용 안 함
-- 키보드 포커스: `2px solid #3182F6` 아웃라인, 간격은 8px 단위
+- 서체: LINE Seed KR → Pretendard → 시스템 sans-serif (Pretendard는 CDN 로드)
+- 상태: 색 변경 없이 opacity만 조정 — Hover 70% / Pressed 50% / Disabled `#E4E4E4`
+- 입력창: 배경 `#F5F5F5`, 보더 없음, 포커스 시 `1px solid #06C755`
+- 버튼 · 입력창 높이 40px (저장 버튼 48px), 모서리 5px (카드 7px)
+- 아코디언은 구분선 방식, 간격은 4/8/12/16px 단위, 그라데이션 · 장식 없음
 
 ## 8. 저장 규칙
 
