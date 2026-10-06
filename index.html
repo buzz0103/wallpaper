@@ -268,6 +268,17 @@
     color:var(--muted);
     margin-bottom:8px;
   }
+  .title-row{
+    padding:10px 0 12px;
+    border-bottom:1px solid var(--line);
+  }
+  .title-row:last-of-type{border-bottom:none;}
+  .title-row.active .t-name{color:var(--red);}
+  .title-row .t-name{font-size:12px;font-weight:700;margin-bottom:2px;}
+  .title-row .t-spec{font-size:10.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;}
+  .title-row .t-pos{display:flex;gap:6px;margin-top:6px;align-items:center;}
+  .title-row .t-pos label{margin:0;font-size:11px;color:var(--muted);flex:0 0 auto;}
+  .title-row .t-pos input{min-width:0;}
 </style>
 </head>
 <body>
@@ -292,17 +303,23 @@
         배경 이미지 등록
         <input type="file" id="bgInput" accept="image/*">
       </label>
-      <div class="hint">1440×900 권장, 자동으로 채워짐</div>
+      <div class="hint">1440×900 권장</div>
+    </div>
+
+    <div class="block" id="titleBlock">
+      <h2>2. 타이틀</h2>
+      <div id="titleRows"></div>
+      <div class="hint">글자를 누르면 캔버스에서 바로 드래그해 옮길 수도 있어요. X는 오른쪽 끝 기준(오른쪽 정렬)이에요.</div>
     </div>
 
     <div class="block">
-      <h2>2. 텍스트 레이어</h2>
+      <h2>3. 텍스트 레이어 (그 외)</h2>
       <div class="layer-list" id="layerList"></div>
       <button class="btn-ghost" id="addBanner" style="width:100%;">+ 배너 텍스트 추가</button>
     </div>
 
     <div class="block" id="editorBlock">
-      <h2>3. 선택한 텍스트 편집</h2>
+      <h2>4. 선택한 텍스트 편집</h2>
       <div id="editorEmpty" class="hint">왼쪽 목록에서 텍스트를 선택하거나<br>캔버스의 글자를 클릭하세요.</div>
       <div id="editorForm" style="display:none;">
         <div class="field" id="textEditorField">
@@ -416,7 +433,7 @@
     </div>
 
     <div class="block">
-      <h2>4. 하단 배너 이미지</h2>
+      <h2>5. 하단 배너 이미지</h2>
       <div class="field row tight" style="margin-bottom:12px;">
         <label style="margin:0;flex:0 0 auto;">배너 표시</label>
         <input type="checkbox" id="footerEnable" style="width:auto;">
@@ -429,14 +446,14 @@
     </div>
 
     <div class="block">
-      <h2>5. 로고 (SVG)</h2>
+      <h2>6. 로고 (SVG)</h2>
       <div class="field row tight" style="margin-bottom:12px;">
         <label style="margin:0;flex:0 0 auto;">로고 표시</label>
         <input type="checkbox" id="logoEnable" style="width:auto;" checked>
       </div>
       <div class="field" style="margin-bottom:0;">
-        <label>가로 크기 (<span id="logoWVal">160</span>px)</label>
-        <input type="range" id="logoW" min="40" max="600" step="1" value="160" style="width:100%;">
+        <label>가로 크기 (<span id="logoWVal">120</span>px)</label>
+        <input type="range" id="logoW" min="40" max="600" step="1" value="120" style="width:100%;">
       </div>
       <div class="hint">src/assets/Brand_logo.svg 를 사용해요. 캔버스에서 드래그로 위치를 옮길 수 있어요. 배경 이미지에 이미 로고가 있으면 표시를 꺼주세요.</div>
     </div>
@@ -469,26 +486,32 @@
   const W = cv.width, H = cv.height;
 
   let bgImage = null;
-  let bgColor = '#CC2030';
+  let bgColor = '#F4F3EF';
 
   const FOOTER_RADIUS = 24;
   const FOOTER_MARGIN_BOTTOM = 30;
   // SVG 로고 (src/assets/Brand_logo.svg) — 드래그/크기조절/표시 토글 가능
   const LOGO_SRC = 'src/assets/Brand_logo.svg';
-  let logo = { id:'logo', img:null, enabled:true, x:150, y:90, w:160 };
+  let logo = { id:'logo', img:null, enabled:true, x:134, y:65.5, w:120 };
   (function(){ const im = new Image(); im.onload = ()=>{ logo.img = im; if (typeof draw === 'function') draw(); }; im.src = LOGO_SRC; })();
   let footerBanner = { id:'footerBanner', img:null, enabled:false, x: W/2, y: H - FOOTER_MARGIN_BOTTOM - 65 };
 
   let layers = [
-    { id:'year',  name:'연도',   text:'2026',
-      x:1200, y:132, size:120, font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'700',
-      color:'#000000', align:'center', lead:1.1, shadow:false, fixed:false },
-    { id:'month', name:'월',     text:'09',
-      x:1200, y:246, size:80, font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'700',
-      color:'#000000', align:'center', lead:1.1, shadow:false, fixed:false },
+    { id:'titleMain',  name:'이달의 혜택', title:true, text:'이달의 혜택',
+      x:630, y:237, size:60,  font:"'Elice DX Neolli OTF', 'Montserrat', sans-serif", weight:'600',
+      color:'#6F4AC7', align:'right', lead:76/60, shadow:false },
+    { id:'titleNum',   name:'월 숫자',     title:true, text:'1',
+      x:630, y:362, size:152, font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'200',
+      color:'#6F4AC7', align:'right', lead:130/152, shadow:false },
+    { id:'titleMonth', name:'영문 월',     title:true, text:'JANUARY', upper:true,
+      x:630, y:433, size:24,  font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'600',
+      color:'#6F4AC7', align:'right', lead:1.2, shadow:false },
+    { id:'titleYear',  name:'연도',        title:true, text:'2027',
+      x:630, y:462, size:24,  font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'700',
+      color:'#6F4AC7', align:'right', lead:1.2, shadow:false },
     { id:'toc',   name:'목차',   type:'toc',
       items:['전체 이벤트 내용 보기','전역장병 할인 이벤트','모델 모집','신규 등록 사은품 증정','온라인 강의 30% 할인','친구 추천 이벤트','수강생 후기 이벤트','조기 등록 할인'],
-      text:'', x:300, y:500, size:20, font:"'Noto Sans KR', sans-serif", weight:'700',
+      text:'', x:700, y:500, size:20, font:"'Noto Sans KR', sans-serif", weight:'700',
       color:'#000000', numColor:'#000000', align:'left', lead:1.5, shadow:false, fixed:false,
       bgColor:'#000000', bgOpacity:0, bgRadius:16, bgPadding:20, emphasisColor:'#CC2030', annotationColor:'#767676' }
   ];
@@ -531,8 +554,8 @@
   }
 
   function wrapAndMeasure(layer){
-    const lines = String(layer.text||'').split('\n');
-    return lines;
+    const t = layer.upper ? String(layer.text||'').toUpperCase() : String(layer.text||'');
+    return t.split('\n');
   }
 
   function parseSegments(str){
@@ -777,6 +800,7 @@
     drawLogo();
 
     updatePosHint();
+    if (typeof syncTitleInputs === 'function') syncTitleInputs();
   }
 
   const posHintEl = document.getElementById('posHint');
@@ -798,11 +822,65 @@
     }
   }
 
+  // ---- 타이틀 블록 (이달의 혜택 / 월 숫자 / 영문 월 / 연도) ----
+  const MONTH_NAMES = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  const TITLE_SPECS = {
+    titleMain:  'Elice DX Neolli Medium · 60px · 줄간격 76px',
+    titleNum:   'Montserrat ExtraLight · 152px · 줄간격 130px',
+    titleMonth: 'Montserrat SemiBold · 24px · 대문자',
+    titleYear:  'Montserrat Bold · 24px'
+  };
+  function setTitleMonthYear(yearStr, monthNum){
+    const y = layers.find(l=>l.id==='titleYear');
+    const n = layers.find(l=>l.id==='titleNum');
+    const m = layers.find(l=>l.id==='titleMonth');
+    if (y) y.text = String(yearStr);
+    if (n) n.text = String(monthNum);
+    if (m && MONTH_NAMES[monthNum-1]) m.text = MONTH_NAMES[monthNum-1];
+  }
+  const titleRowsBox = document.getElementById('titleRows');
+  const titleInputs = {};
+  layers.filter(l=>l.title).forEach(layer=>{
+    const row = document.createElement('div');
+    row.className = 'title-row';
+    row.innerHTML =
+      '<div class="t-name"></div><div class="t-spec"></div>' +
+      '<input type="text" class="t-text">' +
+      '<div class="t-pos"><label>X</label><input type="number" class="t-x" step="1"><label>Y</label><input type="number" class="t-y" step="1"></div>';
+    row.querySelector('.t-name').textContent = layer.name;
+    row.querySelector('.t-spec').textContent = TITLE_SPECS[layer.id] || '';
+    const tText = row.querySelector('.t-text'), tX = row.querySelector('.t-x'), tY = row.querySelector('.t-y');
+    tText.addEventListener('input', ()=>{
+      layer.text = tText.value;
+      if (layer.id === 'titleNum'){
+        const n = parseInt(tText.value,10);
+        const m = layers.find(l=>l.id==='titleMonth');
+        if (m && n>=1 && n<=12) m.text = MONTH_NAMES[n-1];
+      }
+      draw();
+    });
+    tX.addEventListener('input', ()=>{ const v = parseFloat(tX.value); if(!isNaN(v)){ layer.x = v; draw(); } });
+    tY.addEventListener('input', ()=>{ const v = parseFloat(tY.value); if(!isNaN(v)){ layer.y = v; draw(); } });
+    [tText,tX,tY].forEach(el=> el.addEventListener('focus', ()=>{ selectedId = layer.id; renderEditor(); draw(); }));
+    titleRowsBox.appendChild(row);
+    titleInputs[layer.id] = { row, tText, tX, tY };
+  });
+  function syncTitleInputs(){
+    layers.filter(l=>l.title).forEach(layer=>{
+      const t = titleInputs[layer.id]; if (!t) return;
+      t.row.classList.toggle('active', layer.id===selectedId);
+      if (document.activeElement !== t.tText) t.tText.value = layer.text;
+      if (document.activeElement !== t.tX) t.tX.value = Math.round(layer.x);
+      if (document.activeElement !== t.tY) t.tY.value = Math.round(layer.y);
+    });
+  }
+
   // ---- sidebar: layer list ----
   function renderLayerList(){
     const list = document.getElementById('layerList');
     list.innerHTML = '';
     layers.forEach(layer=>{
+      if (layer.title) return;
       const chip = document.createElement('div');
       chip.className = 'layer-chip' + (layer.id===selectedId?' active':'');
       const nm = document.createElement('span');
@@ -1145,10 +1223,7 @@
     const img = new Image();
     img.onload = ()=>{
       bgImage = img;
-      const yearLayer = layers.find(l=>l.id==='year');
-      const monthLayer = layers.find(l=>l.id==='month');
-      if (yearLayer) yearLayer.text = yearStr;
-      if (monthLayer) monthLayer.text = mm;
+      setTitleMonthYear(yearStr, parseInt(mm,10));
       renderLayerList(); renderEditor(); draw();
     };
     img.onerror = ()=>{
@@ -1397,8 +1472,8 @@
 '</html>\n';
   }
   document.getElementById('expPhpSet').addEventListener('click', ()=>{
-    const yearLayer = layers.find(l=>l.id==='year');
-    const monthLayer = layers.find(l=>l.id==='month');
+    const yearLayer = layers.find(l=>l.id==='titleYear');
+    const monthLayer = layers.find(l=>l.id==='titleNum');
     const yearText = ((yearLayer && yearLayer.text) || '').trim();
     const monthText = ((monthLayer && monthLayer.text) || '').trim();
     if (!/^\d{4}$/.test(yearText) || !/^\d{1,2}$/.test(monthText)){
