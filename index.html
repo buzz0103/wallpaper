@@ -57,44 +57,76 @@
     color:var(--ink);
     -webkit-font-smoothing:antialiased;
   }
+  html,body{ height:100%; }
+  body{ display:flex; flex-direction:column; overflow:hidden; }
   header{
-    padding:16px 24px;
+    flex:0 0 56px;
+    padding:0 16px 0 24px;
     border-bottom:1px solid var(--line);
     display:flex;
-    align-items:baseline;
+    align-items:center;
+    justify-content:space-between;
     gap:16px;
     background:var(--surface);
   }
   header h1{
-    font-size:22px;
-    line-height:30px;
+    font-size:18px;
+    line-height:24px;
     font-weight:700;
     margin:0;
     letter-spacing:-0.01em;
   }
-  header span{ font-size:13px; line-height:18px; color:#555555; }
-  header{ flex-wrap:wrap; row-gap:4px; }
+  .hdr-actions{ display:flex; gap:8px; }
+  .hdr-actions button{ height:36px; padding:0 16px; font-size:14px; width:auto; white-space:nowrap; }
   ::selection{ background:#CFE2FC; color:#000; }
   .layout{
+    flex:1; min-height:0;
     display:grid;
     grid-template-columns:360px 1fr;
-    min-height:calc(100vh - 64px);
+    gap:16px;
+    padding:16px;
   }
-  @media (max-width:880px){ .layout{grid-template-columns:1fr;} }
+  @media (max-width:880px){
+    body{ overflow:auto; display:block; }
+    header{ position:sticky; top:0; z-index:5; }
+    .layout{ grid-template-columns:1fr; }
+    aside{ max-height:none !important; }
+    section.stage{ min-height:70vh; }
+  }
   aside{
-    border-right:1px solid var(--line);
     background:var(--surface);
-    padding:0 0 32px;
+    border-radius:12px;
+    padding:0 0 16px;
     overflow-y:auto;
-    max-height:calc(100vh - 64px);
+    min-height:0;
   }
   section.stage{
-    padding:24px;
+    min-width:0; min-height:0;
     display:flex;
     flex-direction:column;
-    align-items:center;
-    gap:16px;
+    gap:8px;
   }
+  .zoom-bar{
+    flex:0 0 auto;
+    display:flex; align-items:center; gap:4px;
+    padding:0 4px;
+  }
+  .zoom-bar button{
+    height:32px; min-width:32px; padding:0 8px;
+    display:inline-flex; align-items:center; justify-content:center; gap:4px;
+    background:transparent; border:none; color:var(--ink); font-size:13px; font-weight:500;
+  }
+  .zoom-bar button svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .zoom-bar .zoom-val{ min-width:48px; text-align:center; font-size:13px; font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .zoom-bar .zoom-sep{ width:1px; height:14px; background:var(--border); margin:0 4px; }
+  .viewport{
+    flex:1; min-height:0;
+    overflow:auto;
+    display:flex; flex-direction:column; align-items:flex-start;
+    gap:8px;
+    padding:4px;
+  }
+  .size-label{ margin:0 auto; font-size:12px; line-height:16px; color:var(--body); flex:0 0 auto; }
 
   /* ---- 컨트롤 패널 (아코디언, 카드 없이 구분선만) ---- */
   .panel-label{ font-size:12px; line-height:16px; font-weight:600; color:var(--body); padding:24px 24px 8px; }
@@ -232,8 +264,9 @@
   /* ---- 캔버스 영역 ---- */
   .canvas-wrap{
     position:relative;
+    flex:0 0 auto;
+    margin:0 auto;
     width:100%;
-    max-width:880px;
     border:1px solid var(--line);
     border-radius:7px;
     overflow:hidden;
@@ -249,12 +282,9 @@
   canvas{ display:block; width:100%; height:auto; touch-action:none; cursor:grab; }
   canvas.dragging{cursor:grabbing;}
   .stage-foot{
-    display:flex; justify-content:space-between; align-items:center;
-    width:100%; max-width:880px;
+    margin:0 auto; flex:0 0 auto;
     font-size:12px; line-height:16px; color:var(--body);
   }
-  .export-row{ display:flex; gap:8px; width:100%; max-width:880px; }
-  .export-row button{ flex:1; height:48px; font-size:16px; }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
@@ -265,7 +295,10 @@
 
 <header>
   <h1>월간 배너 자동 생성기</h1>
-  <span>배경 선택 · 텍스트 입력 · 드래그 배치 · JPG/PNG 저장 (1440×900)</span>
+  <div class="hdr-actions">
+    <button class="btn-ghost" id="expJpg">JPG로 저장</button>
+    <button class="btn-primary" id="expPhpSet">사이트용 파일 저장(PHP)</button>
+  </div>
 </header>
 
 <div class="layout">
@@ -458,20 +491,19 @@
   </aside>
 
   <section class="stage">
-    <div class="canvas-wrap">
-      <canvas id="cv" width="1440" height="900"></canvas>
+    <div class="zoom-bar">
+      <button type="button" id="zoomOut" aria-label="축소"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg></button>
+      <span class="zoom-val" id="zoomVal">100%</span>
+      <button type="button" id="zoomIn" aria-label="확대"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6M11 8v6"/></svg></button>
+      <span class="zoom-sep"></span>
+      <button type="button" id="zoomFit"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>맞춤</button>
     </div>
-    <div class="stage-foot">
-      <span id="posHint">캔버스 안의 텍스트를 드래그해서 위치를 옮길 수 있어요.</span>
-      <span>1440 × 900</span>
-    </div>
-    <div class="export-row">
-      <button class="btn-ghost" id="expPng">PNG로 저장</button>
-      <button class="btn-primary" id="expJpg">JPG로 저장</button>
-    </div>
-    <div class="export-row" style="margin-top:8px;">
-      <button class="btn-ghost" id="expSaveNext">저장 후 다음 달로</button>
-      <button class="btn-primary" id="expPhpSet">사이트용 파일 저장 (PHP)</button>
+    <div class="viewport" id="viewport">
+      <div class="size-label">1440×900</div>
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="cv" width="1440" height="900"></canvas>
+      </div>
+      <div class="stage-foot"><span id="posHint">캔버스 안의 텍스트를 드래그해서 위치를 옮길 수 있어요.</span></div>
     </div>
   </section>
 </div>
@@ -1374,21 +1406,47 @@
     selectedId = prevSelected;
     draw(); // restore the selection outline for continued editing
   }
-  document.getElementById('expPng').addEventListener('click', ()=>exportAs('image/png'));
   document.getElementById('expJpg').addEventListener('click', ()=>exportAs('image/jpeg'));
 
-  // ---- 저장 후 다음 달로 ----
-  document.getElementById('expSaveNext').addEventListener('click', ()=>{
-    exportAs('image/png');
-    exportAs('image/jpeg');
-    const idx = monthPicker.selectedIndex;
-    if (idx >= 0 && idx < monthPicker.options.length - 1){
-      monthPicker.selectedIndex = idx + 1;
-      monthPicker.dispatchEvent(new Event('change'));
-    } else {
-      alert('다음 달 옵션이 없어요. (선택 목록의 끝에 도달했어요)');
+  // ---- 확대 / 축소 / 맞춤 ----
+  (function(){
+    const viewport = document.getElementById('viewport');
+    const wrap = document.getElementById('canvasWrap');
+    const valEl = document.getElementById('zoomVal');
+    const Z_MIN = 0.2, Z_MAX = 3;
+    let zoom = 1, fitMode = true;
+    function fitZoom(){
+      const cs = getComputedStyle(viewport);
+      const availW = viewport.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 2;
+      // 세로: 뷰포트 높이에서 안내 문구(위·아래) 높이를 뺀 값
+      const availH = viewport.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 48 - 2;
+      return Math.max(Z_MIN, Math.min(availW/W, availH/H, 1));
     }
-  });
+    function apply(){
+      wrap.style.width = Math.round(W*zoom + 2) + 'px';
+      valEl.textContent = Math.round(zoom*100) + '%';
+    }
+    function setZoom(z, fit){
+      zoom = Math.min(Z_MAX, Math.max(Z_MIN, z));
+      fitMode = !!fit;
+      apply();
+    }
+    function step(dir){
+      const cur = Math.round(zoom*10)/10;
+      setZoom(Math.round((cur + dir*0.1)*10)/10, false);
+    }
+    document.getElementById('zoomIn').addEventListener('click', ()=>step(1));
+    document.getElementById('zoomOut').addEventListener('click', ()=>step(-1));
+    document.getElementById('zoomFit').addEventListener('click', ()=>setZoom(fitZoom(), true));
+    window.addEventListener('resize', ()=>{ if (fitMode) setZoom(fitZoom(), true); });
+    viewport.addEventListener('wheel', e=>{
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      step(e.deltaY < 0 ? 1 : -1);
+    }, {passive:false});
+    setZoom(fitZoom(), true);
+    requestAnimationFrame(()=>{ if (fitMode) setZoom(fitZoom(), true); });
+  })();
 
   // ---- 사이트용 파일 세트 저장 (PHP + 배경2장) ----
   function downloadTextFile(filename, content, mime){
