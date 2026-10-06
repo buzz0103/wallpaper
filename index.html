@@ -677,9 +677,18 @@
       ctx.fillText(seg.num, lineLeft, y);
       let cx = lineLeft + b.numColW + b.gap;
       seg.parts.forEach(p=>{
+        // 큰 글자(번호·본문) 기준선 — 주석(작은 글자)은 이 기준선에 맞춰 아래쪽 라인에 정렬
+        ctx.font = `${TOC_CONTENT_WEIGHT} ${layer.size}px ${TOC_CONTENT_FONT}`;
+        const baseY = y - ctx.measureText('가').alphabeticBaseline;
         ctx.font = partFont(layer, p);
         ctx.fillStyle = partColor(layer, p);
-        ctx.fillText(p.text, cx, y);
+        if (p.type === 'annotation'){
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillText(p.text, cx, baseY);
+          ctx.textBaseline = 'middle';
+        } else {
+          ctx.fillText(p.text, cx, y);
+        }
         cx += ctx.measureText(p.text).width;
       });
     });
