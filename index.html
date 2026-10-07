@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&family=Jua&family=Do+Hyeon&family=Gothic+A1:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;800&family=Montserrat:wght@200;300;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&family=Jua&family=Do+Hyeon&family=Gothic+A1:wght@400;700;900&family=Nanum+Myeongjo:wght@400;700;800&family=Montserrat:wght@200;300;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* 한글: Elice DX Neolli (Light 300 / Medium 500 / Bold 700). Montserrat은 타이틀용 ExtraLight 200 / SemiBold 600 / Bold 700 + 추가 텍스트용 300 / 500 도 함께 불러와요 */
   @font-face {
@@ -560,7 +560,7 @@
       x:630, y:433, size:24,  font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'600',
       color:'#6F4AC7', align:'right', lead:1.2, shadow:false },
     { id:'titleYear',  name:'연도',        title:true, text:'2027',
-      x:630, y:462, size:24,  font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'800',
+      x:630, y:462, size:24,  font:"'Montserrat', 'Elice DX Neolli OTF', sans-serif", weight:'700',
       color:'#6F4AC7', align:'right', lead:1.2, shadow:false },
     { id:'toc',   name:'목차',   type:'toc',
       items:['전체 이벤트 내용 보기','전역장병 할인 이벤트','모델 모집','신규 등록 사은품 증정','온라인 강의 30% 할인','친구 추천 이벤트','수강생 후기 이벤트','조기 등록 할인'],
@@ -581,7 +581,7 @@
   const fontsToLoad = [
     "16px 'Noto Sans KR'","16px 'Black Han Sans'","16px 'Jua'",
     "16px 'Do Hyeon'","16px 'Gothic A1'","16px 'Nanum Myeongjo'",
-    "200 16px 'Montserrat'","300 16px 'Montserrat'","500 16px 'Montserrat'","600 16px 'Montserrat'","700 16px 'Montserrat'","800 16px 'Montserrat'","300 16px 'Elice DX Neolli OTF'","500 16px 'Elice DX Neolli OTF'","700 16px 'Elice DX Neolli OTF'"
+    "200 16px 'Montserrat'","300 16px 'Montserrat'","500 16px 'Montserrat'","600 16px 'Montserrat'","700 16px 'Montserrat'","300 16px 'Elice DX Neolli OTF'","500 16px 'Elice DX Neolli OTF'","700 16px 'Elice DX Neolli OTF'"
   ];
   const TOC_NUM_FONT = "'Elice DX Neolli OTF', sans-serif";
   const TOC_NUM_WEIGHT = '700';
@@ -889,7 +889,7 @@
     titleMain:  'Elice DX Neolli Medium · 60px · 줄간격 76px',
     titleNum:   'Montserrat ExtraLight · 152px · 줄간격 130px',
     titleMonth: 'Montserrat SemiBold · 24px · 대문자',
-    titleYear:  'Montserrat ExtraBold · 24px'
+    titleYear:  'Montserrat Bold · 24px'
   };
   function setTitleMonthYear(yearStr, monthNum){
     const y = layers.find(l=>l.id==='titleYear');

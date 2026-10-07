@@ -20,7 +20,7 @@
 | 용도 | 폰트 | Light | Medium | Bold |
 | --- | --- | --- | --- | --- |
 | 한글 · 목차 전체 | Elice DX Neolli OTF (`src/fonts/`) | **300** | **500** | 700 |
-| 영문 · 숫자 (타이틀) | Montserrat (Google Fonts) | ExtraLight 200 | SemiBold 600 | Bold 700 (연도는 ExtraBold 800) |
+| 영문 · 숫자 (타이틀) | Montserrat (Google Fonts) | ExtraLight 200 | SemiBold 600 | Bold 700 |
 
 ```css
 font-family: 'Montserrat', 'Elice DX Neolli OTF', sans-serif;
@@ -29,7 +29,7 @@ font-family: 'Montserrat', 'Elice DX Neolli OTF', sans-serif;
 Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX Neolli로 대체됩니다.
 
 - Elice 굵기 숫자: Light 300 / Medium 500 / Bold 700 (`@font-face`의 `font-weight`)
-- 타이틀 영문·숫자는 Montserrat 고유 굵기(월 숫자 ExtraLight 200 / 영문 월 SemiBold 600 / 연도 ExtraBold 800)를 그대로 사용
+- 타이틀 영문·숫자는 Montserrat 고유 굵기(월 숫자 ExtraLight 200 / 영문 월 SemiBold 600 / 연도 Bold 700)를 그대로 사용
 - 추가 텍스트처럼 두 폰트를 같이 쓰는 경우를 위해 Montserrat도 300 / 500을 불러와서 Elice와 같은 숫자로 맞춤
 
 ### 굵기 선택 (UI, 추가 텍스트)
@@ -54,7 +54,7 @@ Montserrat에는 한글 글리프가 없어서, 한글은 자동으로 Elice DX 
 | 이달의 혜택 | 이달의 혜택 | Elice DX Neolli Medium (500) | 60px | 76px | 237 |
 | 월 숫자 | 1 | Montserrat ExtraLight (200) | 152px | 130px | 362 |
 | 영문 월 | JANUARY | Montserrat SemiBold (600), 대문자 | 24px | 약 29px | 433 |
-| 연도 | 2027 | Montserrat ExtraBold (800) | 24px | 약 29px | 462 |
+| 연도 | 2027 | Montserrat Bold (700) | 24px | 약 29px | 462 |
 
 - 연/월 선택 시 월 숫자 · 영문 월 · 연도가 자동으로 바뀝니다. (월 숫자를 직접 고치면 영문 월도 따라 바뀜)
 - 사이트용 PHP 파일명(`wallpaper_{yy}{mm}`)은 연도와 월 숫자 값에서 만듭니다.
