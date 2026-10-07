@@ -1799,7 +1799,7 @@ body +
     const bgDataUrl = exportBgImageAsJpegDataUrl();
     const enc = new TextEncoder();
     const zip = buildZip([
-      {name: `wallpaper_${yy}${mm}.php`, data: enc.encode(buildWallpaperPhp(yy, mm, switchAt))},
+      {name: `wallpaper.php`, data: enc.encode(buildWallpaperPhp(yy, mm, switchAt))},
       {name: `${IMG_DIR}wallpaper_${yy}${mm}.jpg`, data: dataUrlToBytes(mainUrl)},
       {name: `${IMG_DIR}wallpaper_bg_${yy}${mm}.jpg`, data: dataUrlToBytes(bgDataUrl)}
     ]);
