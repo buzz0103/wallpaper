@@ -311,7 +311,7 @@
   <h1>월간 배너 자동 생성기</h1>
   <div class="hdr-actions">
     <button class="btn-ghost" id="expJpg">JPG로 저장</button>
-    <button class="btn-primary" id="expPhpSet">사이트용 파일 저장(PHP)</button>
+    <button class="btn-primary" id="expPhpSet">사이트용 파일 저장(ZIP)</button>
   </div>
 </header>
 
@@ -1541,7 +1541,7 @@
 
   // ---- export ----
   const JPG_QUALITY = 0.95; // JPG 저장 품질 (0~1, 0.95 = 95)
-  function exportAs(type, filename){
+  function exportAs(type, filename, returnOnly){
     const prevSelected = selectedId;
     selectedId = null;
     draw(); // redraw once with no selection outline for a clean export
@@ -1561,14 +1561,17 @@
     } else {
       dataUrl = cv.toDataURL('image/png');
     }
-    link.href = dataUrl;
-    link.download = filename || `wallpaper_banner.${ext}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!returnOnly){
+      link.href = dataUrl;
+      link.download = filename || `wallpaper_banner.${ext}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
     selectedId = prevSelected;
     draw(); // restore the selection outline for continued editing
+    return dataUrl;
   }
   document.getElementById('expJpg').addEventListener('click', ()=>exportAs('image/jpeg'));
 
@@ -1613,6 +1616,45 @@
   })();
 
   // ---- 사이트용 파일 세트 저장 (PHP + 배경2장) ----
+  const IMG_DIR = 'img/'; // PHP 안에서 이미지가 들어갈 폴더 경로
+  // 압축 없이 묶기만 하는 최소 ZIP 생성 (파일명은 UTF-8)
+  const CRC_TABLE = (()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c>>>0; } return t; })();
+  function crc32(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c = CRC_TABLE[(c^u8[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+  function buildZip(files){ // files: [{name, data:Uint8Array}]
+    const enc = new TextEncoder(), parts = [], central = [];
+    let offset = 0;
+    const d = new Date();
+    const dosTime = (d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1);
+    const dosDate = ((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+    files.forEach(f=>{
+      const name = enc.encode(f.name), crc = crc32(f.data), size = f.data.length;
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true); lh.setUint16(8,0,true);
+      lh.setUint16(10,dosTime,true); lh.setUint16(12,dosDate,true); lh.setUint32(14,crc,true);
+      lh.setUint32(18,size,true); lh.setUint32(22,size,true); lh.setUint16(26,name.length,true); lh.setUint16(28,0,true);
+      parts.push(new Uint8Array(lh.buffer), name, f.data);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true); ch.setUint16(8,0x0800,true); ch.setUint16(10,0,true);
+      ch.setUint16(12,dosTime,true); ch.setUint16(14,dosDate,true); ch.setUint32(16,crc,true);
+      ch.setUint32(20,size,true); ch.setUint32(24,size,true); ch.setUint16(28,name.length,true);
+      ch.setUint32(42,offset,true);
+      central.push(new Uint8Array(ch.buffer), name);
+      offset += 30 + name.length + size;
+    });
+    const cdSize = central.reduce((a,b)=>a+b.length,0);
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0,0x06054b50,true); end.setUint16(8,files.length,true); end.setUint16(10,files.length,true);
+    end.setUint32(12,cdSize,true); end.setUint32(16,offset,true);
+    return new Blob([...parts, ...central, new Uint8Array(end.buffer)], {type:'application/zip'});
+  }
+  function dataUrlToBytes(u){ const b=atob(u.split(',')[1]); const a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return a; }
+  function downloadBlob(filename, blob){
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = filename;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
   function downloadTextFile(filename, content, mime){
     const blob = new Blob([content], {type: mime});
     const url = URL.createObjectURL(blob);
@@ -1641,7 +1683,7 @@
     const monthLabel = yy + '년 ' + parseInt(mm,10) + '월';
     return '<!-- ' + monthLabel + ' -->\n' +
 '<div id="' + id + '">\n' +
-'\t<div class="content"><img src="wallpaper_' + yy + mm + '.jpg" alt="이달의혜택 "></div>\n' +
+'\t<div class="content"><img src="' + IMG_DIR + 'wallpaper_' + yy + mm + '.jpg" alt="이달의혜택 "></div>\n' +
 '</div>\n';
   }
   // 해당 월의 CSS 규칙
@@ -1652,7 +1694,7 @@
 '#' + id + ' .content img {width:80vw; max-width:1440px; height:auto; margin: 0 auto; border-radius: min(80px, 4vw); box-shadow: 0 4px 12px rgba(0,0,0,.1);}\n' +
 '#' + id + ' .content {display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh;}\n' +
 '#' + id + ' {position: relative; width: 100%; height: 100%; overflow: hidden;}\n' +
-'#' + id + '::before {content: ""; position: absolute; top: 0; left: 0; width: 120%; height: 120%; background: url(wallpaper_bg_' + yy + mm + '.jpg?' + yy + mm + ') no-repeat 50% 50%; background-size: cover; filter: blur(10px); z-index: -1;}\n';
+'#' + id + '::before {content: ""; position: absolute; top: 0; left: 0; width: 120%; height: 120%; background: url(' + IMG_DIR + 'wallpaper_bg_' + yy + mm + '.jpg?' + yy + mm + ') no-repeat 50% 50%; background-size: cover; filter: blur(10px); z-index: -1;}\n';
   }
   function prevYearMonth(yy, mm){
     let y = 2000 + parseInt(yy,10), m = parseInt(mm,10) - 1;
@@ -1753,17 +1795,15 @@ body +
       switchAt = switchDateVal + ' ' + switchTimeVal + ':00';
     }
 
-    exportAs('image/jpeg', `wallpaper_${yy}${mm}.jpg`);
-
+    const mainUrl = exportAs('image/jpeg', null, true);
     const bgDataUrl = exportBgImageAsJpegDataUrl();
-    const bgLink = document.createElement('a');
-    bgLink.href = bgDataUrl;
-    bgLink.download = `wallpaper_bg_${yy}${mm}.jpg`;
-    document.body.appendChild(bgLink);
-    bgLink.click();
-    document.body.removeChild(bgLink);
-
-    downloadTextFile(`wallpaper_${yy}${mm}.php`, buildWallpaperPhp(yy, mm, switchAt), 'application/octet-stream');
+    const enc = new TextEncoder();
+    const zip = buildZip([
+      {name: `wallpaper_${yy}${mm}.php`, data: enc.encode(buildWallpaperPhp(yy, mm, switchAt))},
+      {name: `${IMG_DIR}wallpaper_${yy}${mm}.jpg`, data: dataUrlToBytes(mainUrl)},
+      {name: `${IMG_DIR}wallpaper_bg_${yy}${mm}.jpg`, data: dataUrlToBytes(bgDataUrl)}
+    ]);
+    downloadBlob(`wallpaper_${yy}${mm}.zip`, zip);
   });
 
   // ---- 색상 피커 아래에 #RRGGBB 값 표시 (직접 입력도 가능) ----
